@@ -25,6 +25,7 @@ public class Roundabout {
 
     /**
      * Roundabout empty constructor.
+     *
      * @param nEntries Number of entries and exits in the roundabout.
      * @param nLanes Number of lanes
      */
@@ -67,6 +68,7 @@ public class Roundabout {
 
     /**
      * Allows queueing a vehicle to the roundabout.
+     *
      * @param vehicle The vehicle to be enqueued.
      * @param entry The entry where the vehicle should be enqueued.
      */
