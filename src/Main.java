@@ -1,7 +1,7 @@
-import domain.vehicles.Vehicle;
+import domain.roundabout.Roundabout;
+import domain.vehicles.Car;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Random;
 
 /**
  * Main class.
@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
 
         // Holds all the Vehicle children classes
-        final String[] VEHICLE_CLASSES = {
+        /*final String[] VEHICLE_CLASSES = {
             "domain.vehicles.Car",
             "domain.vehicles.Motorcycle"
         };
@@ -43,6 +43,24 @@ public class Main {
 
             // Start instance
             vehicles[i].start();
-        }
+        }*/
+
+        /**
+         * Create Roundabout Graph
+         */
+        double radius = 12;
+        int nLanes = 1;
+        int nExits = 4;
+
+        Roundabout roundabout = new Roundabout(radius, nLanes, nExits);
+
+        System.out.println(roundabout.toString());
+
+        /**
+         * Create Vehicle
+         */
+        Car car = new Car(0, 3, 5, roundabout);
+
+        car.start();
     }
 }

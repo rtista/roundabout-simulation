@@ -1,5 +1,13 @@
 package domain.vehicles;
 
+import domain.roundabout.Roundabout;
+import graph.Vertex;
+
+import java.util.ArrayDeque;
+import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.DoubleBinaryOperator;
+
 /**
  * Vehicles are represented as threads and will
  * be placed in roundabout entries.
@@ -27,6 +35,11 @@ public class Vehicle extends Thread {
     private double speed;
 
     /**
+     * The roundabout data structure
+     */
+    private Roundabout roundabout;
+
+    /**
      * Vehicle empty constructor.
      */
     public Vehicle() {
@@ -43,13 +56,33 @@ public class Vehicle extends Thread {
      * @param source The roundabout entry from which the vehicle is coming.
      * @param destination The roundabout exit which the vehicle is taking.
      * @param acceleration The vehicle's acceleration.
+     * @param roundabout The roundabout data structure.
      */
-    public Vehicle(int source, int destination, double acceleration) {
+    public Vehicle(int source, int destination, double acceleration, Roundabout roundabout) {
 
         this.source = source;
         this.destination = destination;
         this.speed = 0;
         this.acceleration = acceleration;
+        this.roundabout = roundabout;
+    }
+
+    /**
+     * Returns the vehicle roundabout entry point.
+     *
+     * @return int
+     */
+    public int getSource() {
+        return this.source;
+    }
+
+    /**
+     * Returns the vehicle roundabout destination exit.
+     *
+     * @return int
+     */
+    public int getDestination() {
+        return this.destination;
     }
 
     /**
@@ -58,12 +91,62 @@ public class Vehicle extends Thread {
     @Override
     public void run() {
 
-        // Wait for first place in queue (roundabout entry)
+        int wait = 5;
 
+        // Wait for first place in queue (roundabout entry)
+        while(wait > 0) {
+
+            System.out.println("Waiting in queue...");
+            try {
+                sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            wait--;
+        }
 
         // Speed increases by acceleration every round (Travelling)
-        this.speed += this.acceleration;
+        // this.speed += this.acceleration;
 
-        // Take exit this.destination
+        // Ask for path to roundabout
+        ArrayDeque<AtomicReference> path = (ArrayDeque<AtomicReference>) this.roundabout.getVehicleShortestRoute(this);
+
+        int i = 0;
+
+        // Print route
+        StringBuilder builder = new StringBuilder().append("Vehicle Path: ");
+        for (AtomicReference v : path) {
+
+            i++;
+
+            builder.append("(").append(i).append(")").append(" -> ");
+        }
+        builder.append("End");
+
+        System.out.println(builder.toString());
+
+        i = 0;
+
+        // Traverse Path
+        for (AtomicReference v : path) {
+
+            i++;
+
+            // Print behaviour
+            System.out.println("Going to node " + i);
+
+            do {
+                // Print behaviour
+                System.out.println("Waiting for lock on the " + i + " node!");
+
+                // Sleep
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            } while(!v.compareAndSet(null, this));
+        }
     }
 }

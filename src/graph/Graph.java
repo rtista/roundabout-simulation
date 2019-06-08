@@ -2,7 +2,6 @@ package graph;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Represents a graph.
@@ -259,13 +258,13 @@ public class Graph<V, E> implements GraphInterface<V, E> {
         // Validate origin node
         Vertex<V, E> vorig = getVertex(origin);
         if (vorig == null) {
-            vorig = insertVertex(origin);
+            vorig = this.insertVertex(origin);
         }
 
         // Validate destination node
         Vertex<V, E> vdest = getVertex(destination);
         if (vdest == null) {
-            vdest = insertVertex(destination);
+            vdest = this.insertVertex(destination);
         }
 
         // Validate if edge does not exist already
@@ -273,14 +272,14 @@ public class Graph<V, E> implements GraphInterface<V, E> {
 
             Edge<V, E> newedge = new Edge<>(value, weight, vorig, vdest);
             vorig.getOutgoing().put(vdest, newedge);
-            numEdge++;
+            this.numEdge++;
 
             //if graph is not direct insert other edge in the opposite direction
-            if (!isDirected) {
+            if (!this.isDirected) {
                 if (getEdge(vdest, vorig) == null) {
                     Edge<V, E> otheredge = new Edge<>(value, weight, vdest, vorig);
                     vdest.getOutgoing().put(vorig, otheredge);
-                    numEdge++;
+                    this.numEdge++;
                 }
             }
 
@@ -371,30 +370,6 @@ public class Graph<V, E> implements GraphInterface<V, E> {
         return null;
     }
 
-    //Returns a clone of the graph
-    public Graph<V, E> clone() {
-
-        Graph<V, E> newObject = new Graph<>(this.isDirected);
-
-        newObject.numVert = this.numVert;
-
-        newObject.listVert = new ArrayList<>();
-        for (Vertex<V, E> v : this.listVert) {
-            newObject.listVert.add(new Vertex<V, E>(v.getKey(), v.getValue()));
-        }
-
-        for (Vertex<V, E> v1 : this.listVert) {
-            for (Edge<V, E> e : this.outgoingEdges(v1)) {
-                if (e != null) {
-                    Vertex<V, E> v2 = this.opposite(v1, e);
-                    newObject.insertEdge(v1.getValue(), v2.getValue(),
-                            e.getValue(), e.getWeight());
-                }
-            }
-        }
-        return newObject;
-    }
-
     /* equals implementation
      * @param the other graph to test for equality
      * @return true if both objects represent the same graph
@@ -444,7 +419,7 @@ public class Graph<V, E> implements GraphInterface<V, E> {
     //string representation
     @Override
     public String toString() {
-        String s = "";
+        /*String s = "";
         if (numVert == 0) {
             s = "\nGraph not defined!!";
         } else {
@@ -460,7 +435,28 @@ public class Graph<V, E> implements GraphInterface<V, E> {
                 }
             }
         }
-        return s;
+        return s;*/
 
+        int seen = 0;
+
+        StringBuilder builder = new StringBuilder();
+
+        // First vertex
+        Vertex v = (Vertex) this.listVert.toArray()[0];
+
+        do {
+            builder.append("(").append(v.getKey()).append(")").append(" -> ");
+
+            v = ((Vertex) v.getOutgoing().keySet().toArray()[0]);
+
+            seen++;
+
+        } while(seen < this.numVert);
+
+        // Insert first vertex
+        builder.append("(").append(v.getKey()).append(")");
+
+        // Return graph representation
+        return builder.toString();
     }
 }

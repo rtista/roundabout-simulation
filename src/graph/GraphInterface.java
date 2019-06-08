@@ -73,8 +73,9 @@ public interface GraphInterface<V,E> {
      */
     Iterable<Edge<V,E>> incomingEdges(Vertex<V,E> v);
 
-    /* Inserts and returns a new vertex with some specific comparable type
-     * @param element the vertex contents
+    /**
+     * Inserts and returns a new vertex with some specific comparable type
+     * @param vInf The vertex value.
      * @return a new vertex
      */
     Vertex<V,E> insertVertex(V vInf);
@@ -93,6 +94,7 @@ public interface GraphInterface<V,E> {
 
     /* Removes a vertex and all its incident edges from the graph
      * @param vInf Information of vertex source
+     * * @param weight The vertex weight.
      */
     void removeVertex(V vInf);
 

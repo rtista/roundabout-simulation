@@ -1,6 +1,5 @@
 package graph;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,7 +24,7 @@ public class Vertex<V, E> {
      * Each vertex maps the vertices to which it connects
      * with the edge that connects them.
      */
-    private Map<Vertex<V, E>, Edge<V, E>> outVerts; //adjacent vertices
+    private Map<Vertex<V, E>, Edge<V, E>> outVerts;
 
     /**
      * Empty vertex constructor
@@ -81,6 +80,7 @@ public class Vertex<V, E> {
      * @param value The vertex value.
      */
     public void setValue(V value) {
+
         this.value = value;
     }
 
@@ -90,6 +90,7 @@ public class Vertex<V, E> {
      * @return Map<Vertex<V, E>, Edge<V, E>>
      */
     public Map<Vertex<V, E>, Edge<V, E>> getOutgoing() {
+
         return this.outVerts;
     }
 
@@ -117,34 +118,9 @@ public class Vertex<V, E> {
 
         // Check if same value or key
         return (this.key == otherVertex.key
-                && this.value != null && otherVertex.value != null
+                && this.value != null
+                && otherVertex.value != null
                 && this.value.equals(otherVertex.value));
-    }
-
-    /**
-     * Returns a vertex the same as this.
-     *
-     * @return Vertex<V, E>
-     */
-    @Override
-    public Vertex<V, E> clone() {
-
-        Vertex<V, E> newVertex = new Vertex<>();
-
-        newVertex.key = key;
-        newVertex.value = value;
-
-        Map<Vertex<V, E>, Edge<V, E>> newMap = new LinkedHashMap<>();
-
-        Iterator<Map.Entry<Vertex<V, E>, Edge<V, E>>> itmap;
-        itmap = this.outVerts.entrySet().iterator();
-        while (itmap.hasNext()) {
-            Map.Entry<Vertex<V, E>, Edge<V, E>> entry = itmap.next();
-            newMap.put(entry.getKey(), entry.getValue());
-        }
-        newVertex.outVerts = newMap;
-
-        return newVertex;
     }
 
     /**
