@@ -2,10 +2,9 @@ package domain.roundabout;
 
 
 import domain.vehicles.Vehicle;
-import graph.Edge;
-import graph.Graph;
-import graph.GraphAlgorithms;
-import graph.Vertex;
+import graphv2.Graph;
+import graphv2.GraphAlgorithms;
+import graphv2.Vertex;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -44,12 +43,12 @@ public class Roundabout {
     /**
      * The roundabout graph
      */
-    private Graph<AtomicReference, Double> graph;
+    private Graph<AtomicReference> graph;
 
     /**
      * The exit vertices of the roundabout.
      */
-    private HashMap<Integer, Edge<AtomicReference, Double>> exitEdges;
+    private HashMap<Integer, Vertex<AtomicReference>> exitNodes;
 
     /**
      * Roundabout empty constructor.
@@ -62,7 +61,7 @@ public class Roundabout {
         this.radius = radius;
         this.nLanes = nLanes;
         this.nExits = nExits;
-        this.exitEdges = new HashMap<>();
+        this.exitNodes = new HashMap<>();
         this.graph = this.buildRoundaboutGraph();
     }
 
@@ -71,7 +70,7 @@ public class Roundabout {
      *
      * @return Graph
      */
-    private Graph<AtomicReference, Double> buildRoundaboutGraph() {
+    private Graph<AtomicReference> buildRoundaboutGraph() {
 
         // Check if graph is possible
         if (this.radius / LANE_WIDTH < this.nLanes) {
@@ -79,7 +78,7 @@ public class Roundabout {
         }
 
         // Create directed graph
-        Graph<AtomicReference, Double> graph = new Graph<>(true);
+        Graph<AtomicReference> graph = new Graph<>(true);
 
         // For each of the lanes to be created
         for (int i = 0; i < this.nLanes; i++) {
@@ -90,41 +89,39 @@ public class Roundabout {
             int nodes = (int) Math.round(perimeter * VERTEX_PER_METER_RATIO);
 
             // First node
-            Vertex<AtomicReference, Double> origin = graph.insertVertex(new AtomicReference(null));
-            Vertex<AtomicReference, Double> v = origin;
+            Vertex<AtomicReference> origin = graph.addVertex(new AtomicReference(null));
+            Vertex<AtomicReference> curr = origin;
 
             // Create nodes for lane in graph
-            for (int j = 0; j < nodes - 1; j++) {
+            for (int j = 0 ; j < nodes - 1; j++) {
 
-                /*
-                 * Build oriented edge between vertices.
-                 * Edge weight is 0 because there's no change between roundabout lane
-                 */
-                Edge e = graph.insertEdge( v.getValue(), new AtomicReference(null),
-                        10.0, 0);
+                // Create next vertex
+                Vertex<AtomicReference> destination = graph.addVertex(new AtomicReference(null));
+
+                // Build oriented edge between vertices.
+                graph.addEdge(curr.getKey(), destination.getKey());
 
                 // Set destination to origin
-                v = e.getDestination();
+                curr = destination;
             }
 
             // Connect last vertex to first vertex for each lane
-            graph.insertEdge( v.getValue(), origin.getValue(),10.0,0);
+            graph.addEdge(curr.getKey(), origin.getKey());
 
-            // First lane in the roundabout
+            // Outer lane in the roundabout
             if (i == 0) {
 
                 // Create roundabout exits
                 for (int j = 0; j < this.nExits; j++) {
 
                     // Calculate exit vertex key
-                    int exitVertexKey = i * (nodes / this.nExits);
+                    int exitVertexKey = j * (nodes / this.nExits);
 
                     // Get vertex by key
-                    Vertex<AtomicReference, Double> exitVertex = graph.getVertex(exitVertexKey);
+                    Vertex<AtomicReference> exitVertex = graph.getVertex(exitVertexKey);
 
-                    // Exit edges weight is -2
-                    this.exitEdges.put(j, graph.insertEdge(exitVertex.getValue(),
-                            new AtomicReference(null),10.0,-2));
+                    // Place the node mapped to the exit
+                    this.exitNodes.put(j, exitVertex);
                 }
             }
         }
@@ -136,28 +133,40 @@ public class Roundabout {
      * Returns a list with the vehicle route inside the roundabout graph.
      *
      * @param v The vehicle.
-     * @return ArrayDeque<AtomicReference>
+     *
+     * @return Deque<AtomicReference>
      */
     public Deque<AtomicReference> getVehicleShortestRoute(Vehicle v) {
 
+        // Get source and destination vertex
+        int origin = this.exitNodes.get(v.getSource()).getKey();
+        int destination = this.exitNodes.get(v.getDestination()).getKey();
+
+        // Get all paths from source to destination
+        ArrayList<Deque<Vertex>> route = GraphAlgorithms.getAllPaths(this.graph, origin, destination);
+
+        // Convert into Deque of Vertex value
+        Deque<AtomicReference> shortestRoute = new ArrayDeque<>();
+
         /*
-        // Get starting vertex
-        Vertex<AtomicReference, Double> origin = this.graph.getVertex(v.getSource());
+        Add all elements from first route
+        TODO: Get shortest route, not first. Shortest route should
+         be the best according to traffic rules
+         */
+        StringBuilder builder = new StringBuilder().append("Vehicle Route: Start -> ");
+        for(Vertex vertex: route.get(0)) {
 
-        // Get exit node
-        Vertex<AtomicReference, Double> destination = this.exitEdges.get(v.getDestination()).getDestination();
-        */
+            shortestRoute.add((AtomicReference) vertex.getValue());
 
-        // Get starting vertex
-        AtomicReference origin = this.graph.getVertex(v.getSource()).getValue();
+            builder.append("(").append(vertex.getKey()).append(") -> ");
+        }
 
-        // Get exit node
-        AtomicReference destination = this.exitEdges.get(v.getDestination()).getDestination().getValue();
+        builder.append("End");
 
-        // Get path
-        ArrayList<Deque<AtomicReference>> route = GraphAlgorithms.allPaths(this.graph, origin, destination);
+        System.out.println(builder.toString());
 
-        return route.get(0);
+        // Return first path
+        return shortestRoute;
     }
 
     @Override
