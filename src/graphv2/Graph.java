@@ -1,5 +1,6 @@
 package graphv2;
 
+
 import java.util.*;
 
 /**
@@ -18,9 +19,9 @@ public class Graph<V> {
     private boolean isDirected;
 
     /**
-     * The vertices label mapped to the vertex itself.
+     * The vertices keys mapped to the vertex itself.
      */
-    private Map<String, Vertex<V>> vertices;
+    private Map<Integer, Vertex<V>> vertices;
 
     /**
      * Graph is represented as adjacency list.
@@ -52,40 +53,41 @@ public class Graph<V> {
     /**
      * Returns the adjacent vertices of the given vertex.
      *
-     * @param label The vertex label.
+     * @param key The vertex key.
      *
      * @return List<Vertex<V>
      */
-    public List<Vertex<V>> getAdjacentVertices(String label) {
+    public List<Vertex<V>> getAdjacentVertices(int key) {
 
         // Return adjacent vertices from vertex
-        return this.adjacencyMap.get(this.vertices.get(label));
+        return this.adjacencyMap.get(this.vertices.get(key));
     }
 
     /**
-     * Returns the vertex with the given label.
+     * Returns the vertex with the given key.
      *
-     * @param label The vertex label.
+     * @param key The vertex key.
      *
      * @return Vertex<V>
      */
-    public Vertex<V> getVertex(String label) {
+    public Vertex<V> getVertex(int key) {
 
-        return this.vertices.get(label);
+        return this.vertices.get(key);
     }
 
     /**
      * Add a vertex to the graph.
      *
-     * @param label The vertex label.
      * @param value The vertex value.
      */
-    public Vertex<V> addVertex(String label, V value) {
+    public Vertex<V> addVertex(V value) {
 
-        Vertex<V> v = new Vertex<>(label, value);
+        int key = this.vertices.size();
+
+        Vertex<V> v = new Vertex<>(key, value);
 
         // Place vertex into vertices map
-        this.vertices.putIfAbsent(label, v);
+        this.vertices.putIfAbsent(key, v);
 
         // Place vertex into adjacency map
         this.adjacencyMap.putIfAbsent(v, new ArrayList<>());
@@ -96,12 +98,12 @@ public class Graph<V> {
     /**
      * Remove a vertex from the graph.
      *
-     * @param label The vertex label.
+     * @param key The vertex key.
      */
-    public Vertex<V> removeVertex(String label) {
+    public Vertex<V> removeVertex(int key) {
 
         // Remove vertex from vertices map
-        Vertex<V> v = this.vertices.remove(label);
+        Vertex<V> v = this.vertices.remove(key);
 
         // Remove vertex from adjacency map
         this.adjacencyMap.remove(v);
@@ -119,14 +121,14 @@ public class Graph<V> {
     /**
      * Creates an edge from the v1 to the v2 vertex.
      *
-     * @param label1 The source vertex label.
-     * @param label2 The destination vertex label.
+     * @param key1 The source vertex key.
+     * @param key2 The destination vertex key.
      */
-    public void addEdge(String label1, String label2) {
+    public void addEdge(int key1, int key2) {
 
         // Get vertices by label
-        Vertex<V> v1 = this.vertices.get(label1);
-        Vertex<V> v2 = this.vertices.get(label2);
+        Vertex<V> v1 = this.vertices.get(key1);
+        Vertex<V> v2 = this.vertices.get(key2);
 
         // If the graph is not directed then create bidirectional edge
         if (!this.isDirected) {

@@ -32,7 +32,7 @@ public class GraphAlgorithms {
         }
 
         // Get adjacent vertices from current vertex
-        ArrayList<Vertex> adj = (ArrayList<Vertex>) graph.getAdjacentVertices(source.getLabel());
+        ArrayList<Vertex> adj = (ArrayList<Vertex>) graph.getAdjacentVertices(source.getKey());
 
         // Recursive call for all the vertices adjacent to current vertex
         for (Vertex v: adj) {
@@ -58,12 +58,12 @@ public class GraphAlgorithms {
      * Returns all the paths from a source vertex to another.
      *
      * @param graph The graph instance.
-     * @param source The source vertex label.
-     * @param destination The destination vertex label.
+     * @param source The source vertex key.
+     * @param destination The destination vertex key.
      *
      * @return ArrayList<Deque<Vertex>>
      */
-    public static ArrayList<Deque<Vertex>> getAllPaths(Graph graph, String source, String destination)
+    public static ArrayList<Deque<Vertex>> getAllPaths(Graph graph, int source, int destination)
     {
         ArrayList<Vertex> list = new ArrayList<>(graph.getVertices());
 
@@ -73,7 +73,7 @@ public class GraphAlgorithms {
             isVisited.put(v, false);
         }
 
-        // Get vertices
+        // Get vertices by key
         Vertex sourcev = graph.getVertex(source);
         Vertex destinationv = graph.getVertex(destination);
 
