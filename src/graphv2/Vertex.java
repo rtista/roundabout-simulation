@@ -1,19 +1,16 @@
 package graphv2;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
- * The Vertex class represents a
+ * The Vertex class represents a node on a graph.
  *
  * @param <V> The vertex value class.
  */
 public class Vertex<V> {
 
     /**
-     * The vertex label.
+     * The vertex key.
      */
-    private String label;
+    private int key;
 
     /**
      * The vertex value.
@@ -29,22 +26,22 @@ public class Vertex<V> {
     /**
      * Vertex constructor.
      *
-     * @param label The vertex label.
+     * @param key The vertex key.
      * @param value The vertex value.
      */
-    public Vertex(String label, V value) {
-        this.label = label;
+    public Vertex(int key, V value) {
+        this.key = key;
         this.value = value;
     }
 
     /**
-     * Returns the vertex label.
+     * Returns the vertex key.
      *
-     * @return String
+     * @return int
      */
-    public String getLabel() {
+    public int getKey() {
 
-        return this.label;
+        return this.key;
     }
 
     /**
@@ -80,7 +77,7 @@ public class Vertex<V> {
         Vertex<V> otherVertex = (Vertex<V>) otherObj;
 
         // Check if same value or key
-        return (this.label == otherVertex.label);
+        return (this.key == otherVertex.key);
     }
 
     /**
@@ -90,7 +87,7 @@ public class Vertex<V> {
      */
     @Override
     public String toString() {
-        return "(" + this.label + ")";
+        return "(" + this.key + ")";
     }
 }
 
