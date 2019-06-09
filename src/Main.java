@@ -1,19 +1,8 @@
 import domain.roundabout.Roundabout;
 import domain.vehicles.Car;
-/*
-import graph.Edge;
-import graph.Graph;
-import graph.Vertex;
-*/
-
-import graphv2.Graph;
-import graphv2.GraphAlgorithms;
-import graphv2.Vertex;
 
 import java.lang.reflect.InvocationTargetException;
-import java.security.InvalidParameterException;
-import java.util.Deque;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Random;
 
 /**
  * Main class.
@@ -61,7 +50,9 @@ public class Main {
             vehicles[i].start();
         }*/
 
-        /*
+        // Create Random generator
+        Random generator = new Random();
+
         // Create Roundabout Graph
         double radius = 12;
         int nLanes = 1;
@@ -69,58 +60,14 @@ public class Main {
 
         Roundabout roundabout = new Roundabout(radius, nLanes, nExits);
 
-        System.out.println(roundabout.toString());
-
         // Create Vehicle
-        Car car = new Car(0, 3, 5, roundabout);
-        car.start();
-        */
-
-        Graph g = build();
-        int i = 0;
-
-        for (Deque<Vertex> path : GraphAlgorithms.getAllPaths(g, "A", "G")) {
-
-            System.out.print("Path " + i + ": ");
-
-            for (Vertex v : path) {
-
-                System.out.print(v.toString() + " -> ");
-            }
-
-            System.out.println();
-
-            i++;
+        for (int i = 0; i < 200; i++) {
+            Car car = new Car(
+                    generator.nextInt(4),
+                    generator.nextInt(4),
+                    5,
+                    roundabout);
+            car.start();
         }
-
-
-    }
-
-    public static Graph build() {
-
-        // Create directed graph
-        Graph<AtomicReference> graph = new Graph<>(true);
-
-        // Create Vertices
-        graph.addVertex("A", new AtomicReference(null));
-        graph.addVertex("B", new AtomicReference(null));
-        graph.addVertex("C", new AtomicReference(null));
-        graph.addVertex("D", new AtomicReference(null));
-        graph.addVertex("E", new AtomicReference(null));
-        graph.addVertex("F", new AtomicReference(null));
-        graph.addVertex("G", new AtomicReference(null));
-        graph.addVertex("H", new AtomicReference(null));
-
-        // Create edges
-        graph.addEdge("A", "B");
-        graph.addEdge("B", "C");
-        graph.addEdge("C", "D");
-        graph.addEdge("D", "E");
-        graph.addEdge("E", "F");
-        graph.addEdge("F", "G");
-        graph.addEdge("G", "H");
-        graph.addEdge("H", "A");
-
-        return graph;
     }
 }
