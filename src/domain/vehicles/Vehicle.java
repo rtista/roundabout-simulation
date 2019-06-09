@@ -99,16 +99,16 @@ public class Vehicle extends Thread {
         int wait = 5;
 
         // Wait for first place in queue (roundabout entry)
-        while(wait > 0) {
+        /*while(wait > 0) {
 
-            System.out.println("Waiting in queue...");
+            // System.out.println("Waiting in queue...");
             try {
-                sleep(1);
+                sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             wait--;
-        }
+        }*/
 
         // Speed increases by acceleration every round (Travelling)
         // this.speed += this.acceleration;
@@ -132,13 +132,20 @@ public class Vehicle extends Thread {
                 System.out.println("Waiting for lock on the " + i + " node!");
 
                 // Sleep
-                try {
-                    Thread.sleep(1);
+                /*try {
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
 
             } while(!v.compareAndSet(null, this));
+
+            // Moving from node to node
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             // Release last node
             do {
@@ -147,7 +154,7 @@ public class Vehicle extends Thread {
 
                 // Sleep
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
