@@ -1,12 +1,9 @@
 package domain.vehicles;
 
 import domain.roundabout.Roundabout;
-import graph.Vertex;
 
-import java.util.ArrayDeque;
-import java.util.LinkedList;
+import java.util.Deque;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.DoubleBinaryOperator;
 
 /**
  * Vehicles are represented as threads and will
@@ -87,6 +84,14 @@ public class Vehicle extends Thread {
 
     /**
      * This will run in a separate thread.
+     *
+     * The method replicates the driver behaviour.
+     * 1. Waits in queue for its turn.
+     * 2. Asks which path should it follow to the roundabout object.
+     * 3. Attempts to lock the AtomicReference for each of the nodes
+     * in its path. Note that only after locking the next reference
+     * does it unlock the previously locked reference. This assures
+     * no vehicle will be in the same spot at the same time.
      */
     @Override
     public void run() {
@@ -109,23 +114,9 @@ public class Vehicle extends Thread {
         // this.speed += this.acceleration;
 
         // Ask for path to roundabout
-        ArrayDeque<AtomicReference> path = (ArrayDeque<AtomicReference>) this.roundabout.getVehicleShortestRoute(this);
+        Deque<AtomicReference> path = this.roundabout.getVehicleShortestRoute(this);
 
         int i = 0;
-
-        // Print route
-        StringBuilder builder = new StringBuilder().append("Vehicle Path: ");
-        for (AtomicReference v : path) {
-
-            i++;
-
-            builder.append("(").append(i).append(")").append(" -> ");
-        }
-        builder.append("End");
-
-        System.out.println(builder.toString());
-
-        i = 0;
 
         // Traverse Path
         for (AtomicReference v : path) {
@@ -135,6 +126,7 @@ public class Vehicle extends Thread {
             // Print behaviour
             System.out.println("Going to node " + i);
 
+            // Move to node
             do {
                 // Print behaviour
                 System.out.println("Waiting for lock on the " + i + " node!");
@@ -147,6 +139,20 @@ public class Vehicle extends Thread {
                 }
 
             } while(!v.compareAndSet(null, this));
+
+            // Release last node
+            do {
+                // Print behaviour
+                System.out.println("Releasing lock on the " + i + " node!");
+
+                // Sleep
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            } while(!v.compareAndSet(this, null));
         }
     }
 }
