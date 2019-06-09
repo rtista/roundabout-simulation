@@ -1,7 +1,10 @@
 import domain.roundabout.Roundabout;
 import domain.vehicles.Car;
+import ui.UserInterface;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -13,6 +16,8 @@ public class Main {
 
     public static final double VERTEX_PER_METER_RATIO = 0.25;
 
+    public static final String DASHES = new String(new char[80]).replace("\0", "-");
+
     /**
      * Main method.
      * @param args Command line arguments.
@@ -22,7 +27,7 @@ public class Main {
      * @throws InvocationTargetException When new instance is not possible.
      * @throws InstantiationException When new instance is not possible.
      */
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, IOException {
 
         // Holds all the Vehicle children classes
         /*final String[] VEHICLE_CLASSES = {
@@ -54,20 +59,61 @@ public class Main {
         Random generator = new Random();
 
         // Create Roundabout Graph
+        int cars = 1;
         double radius = 12;
         int nLanes = 1;
         int nExits = 4;
 
         Roundabout roundabout = new Roundabout(radius, nLanes, nExits);
 
+        // Create watcher thread
+        UserInterface ui = new UserInterface(roundabout.getVertices());
+        ui.start();
+
         // Create Vehicle
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < cars; i++) {
             Car car = new Car(
-                    generator.nextInt(4),
-                    generator.nextInt(4),
+                    // generator.nextInt(4),
+                    // generator.nextInt(4),
+                    0,
+                    3,
                     5,
                     roundabout);
             car.start();
+        }
+
+        final StringBuilder builder = new StringBuilder();
+
+        // Query watcher thread and output results
+        while(true) {
+
+            // Clear builder data
+            builder.setLength(0);
+            builder.append(DASHES + "\n");
+
+            Map<Integer, Boolean> data = ui.getData();
+
+            // Iterate vertices data
+            for (int key : data.keySet()) {
+
+                builder.append("(").append(key).append(" - ").append(data.get(key)).append(") ");
+
+                // Paragraph every 6 vertices
+                if (key % 6 == 0 && key != 0) {
+                    builder.append("\n");
+                }
+            }
+
+            // Output info
+            builder.append("\n" + DASHES + "\n");
+            System.out.print(builder.toString());
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 }

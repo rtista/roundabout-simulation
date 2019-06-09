@@ -66,6 +66,16 @@ public class Roundabout {
     }
 
     /**
+     * Returns the vertices in the graph.
+     *
+     * @return Collection<Vertex<AtomicReference>>
+     */
+    public Collection<Vertex<AtomicReference>> getVertices() {
+
+        return this.graph.getVertices();
+    }
+
+    /**
      * Build the roundabout graph.
      *
      * @return Graph
