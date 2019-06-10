@@ -53,7 +53,6 @@ public class GraphAlgorithms {
         isVisited.replace(source, false);
     }
 
-
     /**
      * Returns all the paths from a source vertex to another.
      *
@@ -88,5 +87,31 @@ public class GraphAlgorithms {
         allPaths(graph, sourcev, destinationv, isVisited, path, allPaths);
 
         return allPaths;
+    }
+
+    /**
+     * Returns the shortest path from a vertex to another.
+     *
+     * @param graph The graph instance.
+     * @param source The source vertex key.
+     * @param destination The destination vertex key.
+     *
+     * @return Deque<Vertex>
+     */
+    public static Deque<Vertex> getShortestPath(Graph graph, int source, int destination) {
+
+        Deque<Vertex> shortestPath = null;
+
+        // Iterate all paths and return the shortest
+        for(Deque<Vertex> path: getAllPaths(graph, source, destination)) {
+
+            // If null or shorter path, override variable
+            if (shortestPath == null || path.size() < shortestPath.size()) {
+
+                shortestPath = path;
+            }
+        }
+
+        return shortestPath;
     }
 }

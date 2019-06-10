@@ -153,21 +153,16 @@ public class Roundabout {
         int destination = this.exitNodes.get(v.getDestination()).getKey();
 
         // Get all paths from source to destination
-        ArrayList<Deque<Vertex>> route = GraphAlgorithms.getAllPaths(this.graph, origin, destination);
+        Deque<Vertex> route = GraphAlgorithms.getShortestPath(this.graph, origin, destination);
 
         // Convert into Deque of Vertex value
         Deque<Vertex<AtomicReference>> shortestRoute = new ArrayDeque<>();
 
-        /*
-        Add all elements from first route
-        TODO: Get shortest route, not first. Shortest route should
-         be the best according to traffic rules
-         */
+        // Add all elements from first route
         StringBuilder builder = new StringBuilder().append("Vehicle Route: Start -> ");
-        for(Vertex vertex: route.get(0)) {
+        for(Vertex vertex: route) {
 
             shortestRoute.add(vertex);
-
             builder.append("(").append(vertex.getKey()).append(") -> ");
         }
 
