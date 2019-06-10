@@ -19,7 +19,7 @@ public class GraphicalUserInterface extends JPanel {
     /**
      * A map of the vertex keys against the respective value.
      */
-    private UserInterface updater;
+    private UIDataUpdater updater;
 
     /**
      * Circumference size.
@@ -38,7 +38,7 @@ public class GraphicalUserInterface extends JPanel {
      *
      * @param updater The roundabout graph vertices.
      */
-    public GraphicalUserInterface(UserInterface updater) {
+    public GraphicalUserInterface(UIDataUpdater updater) {
         super(true);
         this.setPreferredSize(new Dimension(SIZE, SIZE));
         this.updater = updater;
@@ -106,7 +106,7 @@ public class GraphicalUserInterface extends JPanel {
                 radius, nLanes, nExits, nEntries);
 
         // Create watcher thread
-        UserInterface updater = new UserInterface(roundabout.getVertices());
+        UIDataUpdater updater = new UIDataUpdater(roundabout.getVertices());
         updater.start();
 
         // Create GUI elements

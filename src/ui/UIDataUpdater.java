@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * in the roundabout and shows, in real-time,
  * the vacant and occupied vertices to the user.
  */
-public class UserInterface extends Thread {
+public class UIDataUpdater extends Thread {
 
     /**
      * A map of the vertex keys against the respective value.
@@ -33,7 +33,7 @@ public class UserInterface extends Thread {
      *
      * @param vertices The roundabout graph vertices.
      */
-    public UserInterface(Collection<Vertex<AtomicReference>> vertices) {
+    public UIDataUpdater(Collection<Vertex<AtomicReference>> vertices) {
         this.canrun = true;
         this.vertices = new HashMap<>();
         this.data = new HashMap<>();

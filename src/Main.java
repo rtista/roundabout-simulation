@@ -1,10 +1,5 @@
-import domain.roundabout.Roundabout;
-import domain.vehicles.Car;
-import ui.UserInterface;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -63,7 +58,7 @@ public class Main {
         /*Roundabout roundabout = new Roundabout(radius, nLanes, nExits);
 
         // Create watcher thread
-        UserInterface ui = new UserInterface(roundabout.getVertices());
+        UIDataUpdater ui = new UIDataUpdater(roundabout.getVertices());
         ui.start();
 
         // Create Vehicle

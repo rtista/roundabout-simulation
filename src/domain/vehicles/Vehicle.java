@@ -14,6 +14,12 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Vehicle extends Thread {
 
     /**
+     * The vehicle label for identification purposes.
+     * Default: Vehicle_{THREAD_ID}
+     */
+    private String label;
+
+    /**
      * The roundabout entry from which the vehicle is coming.
      */
     private final int source;
@@ -43,6 +49,7 @@ public class Vehicle extends Thread {
      */
     public Vehicle() {
 
+        this.label = null;
         this.source = 0;
         this.destination = 0;
         this.speed = 0;
@@ -59,6 +66,26 @@ public class Vehicle extends Thread {
      */
     public Vehicle(int source, int destination, double acceleration, Roundabout roundabout) {
 
+        this.label = null;
+        this.source = source;
+        this.destination = destination;
+        this.speed = 0;
+        this.acceleration = acceleration;
+        this.roundabout = roundabout;
+    }
+
+    /**
+     * Vehicle constructor.
+     *
+     * @param label        The vehicle's label.
+     * @param source       The roundabout entry from which the vehicle is coming.
+     * @param destination  The roundabout exit which the vehicle is taking.
+     * @param acceleration The vehicle's acceleration.
+     * @param roundabout   The roundabout data structure.
+     */
+    public Vehicle(String label, int source, int destination, double acceleration, Roundabout roundabout) {
+
+        this.label = label;
         this.source = source;
         this.destination = destination;
         this.speed = 0;
@@ -93,6 +120,11 @@ public class Vehicle extends Thread {
     @Override
     public void run() {
 
+        // Define vehicle label if undefined
+        if (this.label == null) {
+            this.label = "Vehicle_" + this.getId();
+        }
+
         // Ask roundabout object for path
         Deque<Vertex<AtomicReference>> path = this.roundabout.getVehicleShortestRoute(this.source, this.destination);
         Vertex<AtomicReference> last = null;
@@ -104,19 +136,19 @@ public class Vehicle extends Thread {
         while(entry.peek() != this) {
 
             this.vehicleSleep(1000);
-            System.out.println("Waiting on entry queue.");
+            System.out.println(this.label + ": Waiting on entry queue.");
         }
 
         // Traverse Path
         for (Vertex<AtomicReference> v : path) {
 
-            System.out.println("Moving to node " + v.getKey());
+            System.out.println(this.label + ": Moving to node " + v.getKey());
 
             // Move to node
             while (!v.getValue().compareAndSet(null, this)) {
 
                 // Print behaviour
-                System.out.println("Waiting for lock on the " + v.getKey() + " node!");
+                System.out.println(this.label + ": Waiting for lock on the " + v.getKey() + " node!");
 
                 // Sleep
                 this.vehicleSleep(1000);
@@ -136,7 +168,7 @@ public class Vehicle extends Thread {
                 while (!last.getValue().compareAndSet(this, null)) {
 
                     // Print behaviour
-                    System.out.println("Releasing lock on the " + last.getKey() + " node!");
+                    System.out.println(this.label + ": Releasing lock on the " + last.getKey() + " node!");
 
                     // Sleep
                     this.vehicleSleep(1000);
@@ -151,7 +183,7 @@ public class Vehicle extends Thread {
         while (!last.getValue().compareAndSet(this, null)) {
 
             // Print behaviour
-            System.out.println("Releasing lock on the " + last.getKey() + " node!");
+            System.out.println(this.label + ": Releasing lock on the " + last.getKey() + " node!");
 
             // Sleep
             this.vehicleSleep(1000);
