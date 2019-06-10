@@ -146,7 +146,7 @@ public class Roundabout {
      *
      * @return Deque<AtomicReference>
      */
-    public Deque<AtomicReference> getVehicleShortestRoute(Vehicle v) {
+    public Deque<Vertex<AtomicReference>> getVehicleShortestRoute(Vehicle v) {
 
         // Get source and destination vertex
         int origin = this.exitNodes.get(v.getSource()).getKey();
@@ -156,7 +156,7 @@ public class Roundabout {
         ArrayList<Deque<Vertex>> route = GraphAlgorithms.getAllPaths(this.graph, origin, destination);
 
         // Convert into Deque of Vertex value
-        Deque<AtomicReference> shortestRoute = new ArrayDeque<>();
+        Deque<Vertex<AtomicReference>> shortestRoute = new ArrayDeque<>();
 
         /*
         Add all elements from first route
@@ -166,7 +166,7 @@ public class Roundabout {
         StringBuilder builder = new StringBuilder().append("Vehicle Route: Start -> ");
         for(Vertex vertex: route.get(0)) {
 
-            shortestRoute.add((AtomicReference) vertex.getValue());
+            shortestRoute.add(vertex);
 
             builder.append("(").append(vertex.getKey()).append(") -> ");
         }

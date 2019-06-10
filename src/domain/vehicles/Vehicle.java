@@ -1,6 +1,7 @@
 package domain.vehicles;
 
 import domain.roundabout.Roundabout;
+import graphv2.Vertex;
 
 import java.util.Deque;
 import java.util.concurrent.atomic.AtomicReference;
@@ -50,10 +51,10 @@ public class Vehicle extends Thread {
     /**
      * Vehicle constructor.
      *
-     * @param source The roundabout entry from which the vehicle is coming.
-     * @param destination The roundabout exit which the vehicle is taking.
+     * @param source       The roundabout entry from which the vehicle is coming.
+     * @param destination  The roundabout exit which the vehicle is taking.
      * @param acceleration The vehicle's acceleration.
-     * @param roundabout The roundabout data structure.
+     * @param roundabout   The roundabout data structure.
      */
     public Vehicle(int source, int destination, double acceleration, Roundabout roundabout) {
 
@@ -84,7 +85,7 @@ public class Vehicle extends Thread {
 
     /**
      * This will run in a separate thread.
-     *
+     * <p>
      * The method replicates the driver behaviour.
      * 1. Waits in queue for its turn.
      * 2. Asks which path should it follow to the roundabout object.
@@ -96,61 +97,20 @@ public class Vehicle extends Thread {
     @Override
     public void run() {
 
-        int wait = 5;
-
-        // Wait for first place in queue (roundabout entry)
-        /*while(wait > 0) {
-
-            // System.out.println("Waiting in queue...");
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            wait--;
-        }*/
-
-        // Speed increases by acceleration every round (Travelling)
-        // this.speed += this.acceleration;
-
         // Ask for path to roundabout
-        Deque<AtomicReference> path = this.roundabout.getVehicleShortestRoute(this);
-
-        int i = 0;
+        Deque<Vertex<AtomicReference>> path = this.roundabout.getVehicleShortestRoute(this);
+        Vertex<AtomicReference> last = null;
 
         // Traverse Path
-        for (AtomicReference v : path) {
+        for (Vertex<AtomicReference> v : path) {
 
-            i++;
-
-            // Print behaviour
-            System.out.println("Going to node " + i);
+            System.out.println("Moving to node " + v.getKey());
 
             // Move to node
-            do {
+            while (!v.getValue().compareAndSet(null, this)) {
+
                 // Print behaviour
-                System.out.println("Waiting for lock on the " + i + " node!");
-
-                // Sleep
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
-
-            } while(!v.compareAndSet(null, this));
-
-            // Moving from node to node
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            // Release last node
-            do {
-                // Print behaviour
-                System.out.println("Releasing lock on the " + i + " node!");
+                System.out.println("Waiting for lock on the " + v.getKey() + " node!");
 
                 // Sleep
                 try {
@@ -158,8 +118,50 @@ public class Vehicle extends Thread {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            }
 
-            } while(!v.compareAndSet(this, null));
+            // Moving from node to node
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            // Unlock previous locked node
+            if (last != null) {
+
+                // Release last node
+                while (!last.getValue().compareAndSet(this, null)) {
+
+                    // Print behaviour
+                    System.out.println("Releasing lock on the " + last.getKey() + " node!");
+
+                    // Sleep
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            // Assign v as the last node which it travelled to
+            last = v;
         }
+
+        // Release last node
+        while (!last.getValue().compareAndSet(this, null)) {
+
+            // Print behaviour
+            System.out.println("Releasing lock on the " + last.getKey() + " node!");
+
+            // Sleep
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 }
