@@ -6,7 +6,6 @@ import graphv2.Graph;
 import graphv2.GraphAlgorithms;
 import graphv2.Vertex;
 
-import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -16,31 +15,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Roundabout {
 
     /**
-     * Roundabout traffic lane width in meters.
-     */
-    public static final double LANE_WIDTH = 3;
-
-    /**
-     * Number of nodes per meter of perimeter of the roundabout lane.
-     */
-    public static final double VERTEX_PER_METER_RATIO = 0.25;
-
-    /**
-     * The roundabout radius.
-     */
-    private final double radius;
-
-    /**
-     * The number of lanes.
-     */
-    private final int nLanes;
-
-    /**
-     * The number of lanes.
-     */
-    private final int nExits;
-
-    /**
      * The roundabout graph
      */
     private Graph<AtomicReference> graph;
@@ -48,21 +22,27 @@ public class Roundabout {
     /**
      * The exit vertices of the roundabout.
      */
-    private HashMap<Integer, Vertex<AtomicReference>> exitNodes;
+    private Map<Integer, Vertex<AtomicReference>> entryNodes;
 
     /**
-     * Roundabout empty constructor.
-     *
-     * @param radius The radius of the roundabout in meters.
-     * @param nLanes Number of lanes in the roundabout.
+     * The exit vertices of the roundabout.
      */
-    public Roundabout(double radius, int nLanes, int nExits) {
+    private Map<Integer, Vertex<AtomicReference>> exitNodes;
 
-        this.radius = radius;
-        this.nLanes = nLanes;
-        this.nExits = nExits;
-        this.exitNodes = new HashMap<>();
-        this.graph = this.buildRoundaboutGraph();
+    /**
+     * Roundabout constructor.
+     *
+     * @param graph The roundabout graph.
+     * @param entryNodes The entry nodes map.
+     * @param exitNodes The exit nodes map.
+     */
+    public Roundabout(Graph<AtomicReference> graph,
+                      Map<Integer, Vertex<AtomicReference>> entryNodes,
+                      Map<Integer, Vertex<AtomicReference>> exitNodes) {
+
+        this.entryNodes = entryNodes;
+        this.exitNodes = exitNodes;
+        this.graph = graph;
     }
 
     /**
@@ -76,67 +56,15 @@ public class Roundabout {
     }
 
     /**
-     * Build the roundabout graph.
+     * Returns the number of lanes in the roundabout.
      *
-     * @return Graph
+     * @return int
      */
-    private Graph<AtomicReference> buildRoundaboutGraph() {
+    public int getLaneCount() {
 
-        // Check if graph is possible
-        if (this.radius / LANE_WIDTH < this.nLanes) {
-            throw new InvalidParameterException("Radius too small for so many lanes!");
-        }
+        int nLanes = this.getVertices().stream().mapToInt(Vertex::getWeight).filter(v -> v >= 0).max().orElse(0);
 
-        // Create directed graph
-        Graph<AtomicReference> graph = new Graph<>(true);
-
-        // For each of the lanes to be created
-        for (int i = 0; i < this.nLanes; i++) {
-
-            // Calculate number of nodes required to represent the lane
-            double laneRadius = this.radius - (i * LANE_WIDTH) - (LANE_WIDTH / 2);
-            double perimeter = (2 * Math.PI * laneRadius);
-            int nodes = (int) Math.round(perimeter * VERTEX_PER_METER_RATIO);
-
-            // First node
-            Vertex<AtomicReference> origin = graph.addVertex(new AtomicReference(null));
-            Vertex<AtomicReference> curr = origin;
-
-            // Create nodes for lane in graph
-            for (int j = 0 ; j < nodes - 1; j++) {
-
-                // Create next vertex
-                Vertex<AtomicReference> destination = graph.addVertex(new AtomicReference(null));
-
-                // Build oriented edge between vertices.
-                graph.addEdge(curr.getKey(), destination.getKey());
-
-                // Set destination to origin
-                curr = destination;
-            }
-
-            // Connect last vertex to first vertex for each lane
-            graph.addEdge(curr.getKey(), origin.getKey());
-
-            // Outer lane in the roundabout
-            if (i == 0) {
-
-                // Create roundabout exits
-                for (int j = 0; j < this.nExits; j++) {
-
-                    // Calculate exit vertex key
-                    int exitVertexKey = j * (nodes / this.nExits);
-
-                    // Get vertex by key
-                    Vertex<AtomicReference> exitVertex = graph.getVertex(exitVertexKey);
-
-                    // Place the node mapped to the exit
-                    this.exitNodes.put(j, exitVertex);
-                }
-            }
-        }
-
-        return graph;
+        return nLanes + 1;
     }
 
     /**
@@ -149,7 +77,7 @@ public class Roundabout {
     public Deque<Vertex<AtomicReference>> getVehicleShortestRoute(Vehicle v) {
 
         // Get source and destination vertex
-        int origin = this.exitNodes.get(v.getSource()).getKey();
+        int origin = this.entryNodes.get(v.getSource()).getKey();
         int destination = this.exitNodes.get(v.getDestination()).getKey();
 
         // Get all paths from source to destination
