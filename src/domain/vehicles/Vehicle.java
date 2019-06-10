@@ -4,6 +4,7 @@ import domain.roundabout.Roundabout;
 import graphv2.Vertex;
 
 import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -97,9 +98,25 @@ public class Vehicle extends Thread {
     @Override
     public void run() {
 
-        // Ask for path to roundabout
+        // Ask roundabout object for path
         Deque<Vertex<AtomicReference>> path = this.roundabout.getVehicleShortestRoute(this);
         Vertex<AtomicReference> last = null;
+
+        // Get entry queue
+        ConcurrentLinkedQueue<Vehicle> entry = (ConcurrentLinkedQueue<Vehicle>) path.getFirst().getValue().get();
+
+        // Wait for first line on queue
+        while(entry.peek() != this) {
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Waiting on entry queue.");
+        }
+
+        entry.remove(this);
 
         // Traverse Path
         for (Vertex<AtomicReference> v : path) {

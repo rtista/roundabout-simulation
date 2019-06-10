@@ -1,16 +1,19 @@
 package ui;
 
+import domain.roundabout.Factory;
 import domain.roundabout.Roundabout;
 import domain.vehicles.Car;
-import graphv2.Vertex;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Random;
 
+/**
+ * Class provides a GUI which allows the user to see
+ * what positions of the roundabout are being taken and
+ * general vehicle flow.
+ */
 public class GraphicalUserInterface extends JPanel {
 
     /**
@@ -19,10 +22,14 @@ public class GraphicalUserInterface extends JPanel {
     private UserInterface updater;
 
     /**
-     *
+     * Circumference size.
      */
     private static final int SIZE = 256;
-    private int a = SIZE / 2;
+
+    /**
+     *
+     */
+    private int a = SIZE / 4;
     private int b = a;
     private int r = 4 * SIZE / 5;
 
@@ -90,12 +97,13 @@ public class GraphicalUserInterface extends JPanel {
     public static void main(String[] args) {
 
         // Create Roundabout Graph
-        int cars = 1;
-        double radius = 12;
+        double radius = 20;
         int nLanes = 1;
         int nExits = 4;
+        int nEntries = 4;
 
-        Roundabout roundabout = new Roundabout(radius, nLanes, nExits);
+        Roundabout roundabout = Factory.getInstance().buildRoundabout(
+                radius, nLanes, nExits, nEntries);
 
         // Create watcher thread
         UserInterface updater = new UserInterface(roundabout.getVertices());
@@ -111,15 +119,32 @@ public class GraphicalUserInterface extends JPanel {
         f.pack();
         f.setVisible(true);
 
+        // Create Random generator
+        Random generator = new Random();
+
+        int cars = 1;
+
         // Create Vehicle
         for (int i = 0; i < cars; i++) {
             Car car = new Car(
-                    0,
-                    3,
+                    1,
+                    4,
                     5,
                     roundabout);
             car.start();
         }
+
+        /*int cars = 5;
+
+        // Create Vehicle
+        for (int i = 0; i < cars; i++) {
+            Car car = new Car(
+                    generator.nextInt(4),
+                    generator.nextInt(4),
+                    5,
+                    roundabout);
+            car.start();
+        }*/
 
         // Query watcher thread and call repaint
         while (true) {

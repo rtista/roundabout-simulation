@@ -12,10 +12,6 @@ import java.util.Random;
  */
 public class Main {
 
-    public static final double LANE_WIDTH = 3;
-
-    public static final double VERTEX_PER_METER_RATIO = 0.25;
-
     public static final String DASHES = new String(new char[80]).replace("\0", "-");
 
     /**
@@ -64,7 +60,7 @@ public class Main {
         int nLanes = 1;
         int nExits = 4;
 
-        Roundabout roundabout = new Roundabout(radius, nLanes, nExits);
+        /*Roundabout roundabout = new Roundabout(radius, nLanes, nExits);
 
         // Create watcher thread
         UserInterface ui = new UserInterface(roundabout.getVertices());
@@ -113,7 +109,6 @@ public class Main {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-        }
+        }*/
     }
 }

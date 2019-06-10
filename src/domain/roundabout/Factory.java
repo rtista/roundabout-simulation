@@ -1,5 +1,6 @@
 package domain.roundabout;
 
+import domain.vehicles.Vehicle;
 import graphv2.Graph;
 import graphv2.Vertex;
 
@@ -112,7 +113,7 @@ public class Factory {
                             Vertex<AtomicReference> entryVertex = graph.addVertex(
                                     new Vertex<>(
                                             0,
-                                            new AtomicReference(new ConcurrentLinkedQueue<>()),
+                                            new AtomicReference(new ConcurrentLinkedQueue<Vehicle>()),
                                             -1
                                     )
                             );
@@ -130,7 +131,7 @@ public class Factory {
 
                             // Add exit vertex - Weight for exit nodes is -2
                             Vertex<AtomicReference> exitVertex = graph.addVertex(
-                                    new Vertex<>(0, new AtomicReference(null), -2)
+                                    new Vertex<>(0, new AtomicReference<>(null), -2)
                             );
 
                             // Create edge from roundabout node to exit node
