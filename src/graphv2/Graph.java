@@ -2,6 +2,7 @@ package graphv2;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Represents a graph as an adjacency list.
@@ -16,17 +17,27 @@ public class Graph<V> {
     /**
      * Whether the graph is or not directed.
      */
-    private boolean isDirected;
+    protected boolean isDirected;
 
     /**
      * The vertices keys mapped to the vertex itself.
      */
-    private Map<Integer, Vertex<V>> vertices;
+    protected Map<Integer, Vertex<V>> vertices;
 
     /**
      * Graph is represented as adjacency list.
      */
-    private Map<Vertex<V>, List<Vertex<V>>> adjacencyMap;
+    protected Map<Vertex<V>, List<Vertex<V>>> adjacencyMap;
+
+    /**
+     * Graph empty constructor.
+     */
+    public Graph() {
+
+        this.isDirected = false;
+        this.vertices = new HashMap<>();
+        this.adjacencyMap = new HashMap<>();
+    }
 
     /**
      * Graph empty constructor.
@@ -76,23 +87,33 @@ public class Graph<V> {
     }
 
     /**
+     * Returns a collection of the vertices with the given weight.
+     *
+     * @param weight The vertex weight.
+     *
+     * @return Collection<WeighedVertex<V>>
+     */
+    public Collection<Vertex<V>> getVertices(int weight) {
+
+        return this.getVertices().stream().filter(v -> v.getWeight() == weight).collect(Collectors.toList());
+    }
+
+    /**
      * Add a vertex to the graph.
      *
-     * @param value The vertex value.
+     * @param vertex The vertex to add.
      */
-    public Vertex<V> addVertex(V value) {
+    public Vertex<V> addVertex(Vertex<V> vertex) {
 
-        int key = this.vertices.size();
-
-        Vertex<V> v = new Vertex<>(key, value);
+        vertex.setKey(this.vertices.size());
 
         // Place vertex into vertices map
-        this.vertices.putIfAbsent(key, v);
+        this.vertices.putIfAbsent(vertex.getKey(), vertex);
 
         // Place vertex into adjacency map
-        this.adjacencyMap.putIfAbsent(v, new ArrayList<>());
+        this.adjacencyMap.putIfAbsent(vertex, new ArrayList<>());
 
-        return v;
+        return vertex;
     }
 
     /**

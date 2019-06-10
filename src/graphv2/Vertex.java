@@ -18,6 +18,11 @@ public class Vertex<V> {
     private V value;
 
     /**
+     * The vertex weight.
+     */
+    private int weight;
+
+    /**
      * Empty vertex constructor
      */
     public Vertex() {
@@ -32,6 +37,21 @@ public class Vertex<V> {
     public Vertex(int key, V value) {
         this.key = key;
         this.value = value;
+        this.weight = 0;
+    }
+
+    /**
+     * Weighed Vertex constructor.
+     *
+     * @param key The vertex key.
+     * @param value The vertex value.
+     * @param weight The vertex weight.
+     */
+    public Vertex(int key, V value, int weight) {
+
+        this.key = key;
+        this.value = value;
+        this.weight = weight;
     }
 
     /**
@@ -45,6 +65,15 @@ public class Vertex<V> {
     }
 
     /**
+     * Sets the vertex key.
+     *
+     * @param key The vertex key.
+     */
+    public void setKey(int key) {
+        this.key = key;
+    }
+
+    /**
      * Returns the value of the vertex.
      *
      * @return V The vertex value.
@@ -52,6 +81,15 @@ public class Vertex<V> {
     public V getValue() {
 
         return this.value;
+    }
+
+    /**
+     * Returns the vertex weight.
+     *
+     * @return double
+     */
+    public int getWeight() {
+        return this.weight;
     }
 
     /**
