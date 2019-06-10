@@ -94,7 +94,7 @@ public class GraphicalUserInterface extends JPanel {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         // Create Roundabout Graph
         double radius = 20;
@@ -122,7 +122,7 @@ public class GraphicalUserInterface extends JPanel {
         // Create Random generator
         Random generator = new Random();
 
-        int cars = 1;
+        int cars = 5;
 
         // Create Vehicle
         for (int i = 0; i < cars; i++) {

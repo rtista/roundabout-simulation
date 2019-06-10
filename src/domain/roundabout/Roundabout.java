@@ -7,6 +7,7 @@ import graphv2.GraphAlgorithms;
 import graphv2.Vertex;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -68,20 +69,42 @@ public class Roundabout {
     }
 
     /**
+     * Queues the vehicle on a certain entry.
+     *
+     * @param v The vehicle to be queued.
+     * @param entry The entry in which to be queued.
+     *
+     * @return ConcurrentLinkedQueue<Vehicle> The queue.
+     */
+    public ConcurrentLinkedQueue<Vehicle> queueOnEntry(Vehicle v, int entry) {
+
+        // Get the entry queue
+        ConcurrentLinkedQueue<Vehicle> queue = (ConcurrentLinkedQueue<Vehicle>) this.entryNodes.get(entry).getValue().get();
+
+        // Add vehicle to the entry queue
+        queue.add(v);
+
+        // Return the queue reference so the vehicle can peek
+        return queue;
+    }
+
+    /**
      * Returns a list with the vehicle route inside the roundabout graph.
      *
-     * @param v The vehicle.
+     * @param entry The entry the vehicle is coming from.
+     * @param exit The exit the vehicle is taking.
      *
      * @return Deque<AtomicReference>
      */
-    public Deque<Vertex<AtomicReference>> getVehicleShortestRoute(Vehicle v) {
+    public Deque<Vertex<AtomicReference>> getVehicleShortestRoute(int entry, int exit) {
 
         // Get source and destination vertex
-        int origin = this.entryNodes.get(v.getSource()).getKey();
-        int destination = this.exitNodes.get(v.getDestination()).getKey();
+        int origin = this.entryNodes.get(entry).getKey();
+        int destination = this.exitNodes.get(exit).getKey();
 
-        // Get all paths from source to destination
+        // Get all paths from source to destination but remove entry node
         Deque<Vertex> route = GraphAlgorithms.getShortestPath(this.graph, origin, destination);
+        route.removeFirst();
 
         // Convert into Deque of Vertex value
         Deque<Vertex<AtomicReference>> shortestRoute = new ArrayDeque<>();

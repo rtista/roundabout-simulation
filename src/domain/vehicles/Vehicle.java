@@ -67,21 +67,16 @@ public class Vehicle extends Thread {
     }
 
     /**
-     * Returns the vehicle roundabout entry point.
+     * Function defined for simpler code reading on run method.
      *
-     * @return int
+     * @param l The number of milliseconds to sleep.
      */
-    public int getSource() {
-        return this.source;
-    }
-
-    /**
-     * Returns the vehicle roundabout destination exit.
-     *
-     * @return int
-     */
-    public int getDestination() {
-        return this.destination;
+    private void vehicleSleep(long l) {
+        try {
+            Thread.sleep(l);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -99,24 +94,18 @@ public class Vehicle extends Thread {
     public void run() {
 
         // Ask roundabout object for path
-        Deque<Vertex<AtomicReference>> path = this.roundabout.getVehicleShortestRoute(this);
+        Deque<Vertex<AtomicReference>> path = this.roundabout.getVehicleShortestRoute(this.source, this.destination);
         Vertex<AtomicReference> last = null;
 
         // Get entry queue
-        ConcurrentLinkedQueue<Vehicle> entry = (ConcurrentLinkedQueue<Vehicle>) path.getFirst().getValue().get();
+        ConcurrentLinkedQueue<Vehicle> entry = this.roundabout.queueOnEntry(this, this.source);
 
-        // Wait for first line on queue
+        // Wait for first in queue
         while(entry.peek() != this) {
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            this.vehicleSleep(1000);
             System.out.println("Waiting on entry queue.");
         }
-
-        entry.remove(this);
 
         // Traverse Path
         for (Vertex<AtomicReference> v : path) {
@@ -130,19 +119,15 @@ public class Vehicle extends Thread {
                 System.out.println("Waiting for lock on the " + v.getKey() + " node!");
 
                 // Sleep
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                this.vehicleSleep(1000);
             }
 
+            // Remove myself from queue only after locking the first node
+            if (path.peekFirst() == v) entry.remove(this);
+
             // Moving from node to node
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            // TODO: Implements physic here to with vehicle speed
+            this.vehicleSleep(1000);
 
             // Unlock previous locked node
             if (last != null) {
@@ -154,11 +139,7 @@ public class Vehicle extends Thread {
                     System.out.println("Releasing lock on the " + last.getKey() + " node!");
 
                     // Sleep
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    this.vehicleSleep(1000);
                 }
             }
 
@@ -173,11 +154,7 @@ public class Vehicle extends Thread {
             System.out.println("Releasing lock on the " + last.getKey() + " node!");
 
             // Sleep
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            this.vehicleSleep(1000);
         }
 
     }
