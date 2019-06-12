@@ -69,6 +69,30 @@ public class Roundabout {
     }
 
     /**
+     * Check if vertex is entry.
+     *
+     * @param vertex The vertex to check.
+     *
+     * @return boolean
+     */
+    public boolean isEntry(Vertex<AtomicReference> vertex) {
+
+        return this.entryNodes.containsValue(vertex);
+    }
+
+    /**
+     * Check if vertex is exit.
+     *
+     * @param vertex The vertex to check.
+     *
+     * @return boolean
+     */
+    public boolean isExit(Vertex<AtomicReference> vertex) {
+
+        return this.exitNodes.containsValue(vertex);
+    }
+
+    /**
      * Queues the vehicle on a certain entry.
      *
      * @param v The vehicle to be queued.

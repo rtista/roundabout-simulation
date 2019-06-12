@@ -1,8 +1,12 @@
 package ui;
 
+import domain.roundabout.Roundabout;
+import domain.vehicles.Vehicle;
 import graphv2.Vertex;
 
+import java.awt.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -13,15 +17,15 @@ import java.util.concurrent.atomic.AtomicReference;
 public class UIDataUpdater extends Thread {
 
     /**
-     * A map of the vertex keys against the respective value.
+     * The roundabout object.
      */
-    private Map<Integer, AtomicReference> vertices;
+    private final Roundabout roundabout;
 
     /**
      * A map of the vertex keys against whether
      * the vertex is occupied or not.
      */
-    private Map<Integer, Boolean> data;
+    private Map<Integer, Color> data;
 
     /**
      * Whether the thread can or not keep running.
@@ -31,26 +35,25 @@ public class UIDataUpdater extends Thread {
     /**
      * The constructor.
      *
-     * @param vertices The roundabout graph vertices.
+     * @param roundabout The roundabout object.
      */
-    public UIDataUpdater(Collection<Vertex<AtomicReference>> vertices) {
+    public UIDataUpdater(Roundabout roundabout) {
         this.canrun = true;
-        this.vertices = new HashMap<>();
+        this.roundabout = roundabout;
         this.data = new HashMap<>();
 
         // Populate vertices and data maps
-        vertices.forEach(vertex -> {
-            this.vertices.put(vertex.getKey(), vertex.getValue());
-            this.data.put(vertex.getKey(), false);
+        this.roundabout.getVertices().forEach(vertex -> {
+            this.data.put(vertex.getKey(), Color.GREEN);
         });
     }
 
     /**
      * Get vertex vacancy data.
      *
-     * @return Map<Integer, Boolean>
+     * @return Map<Integer, Color>
      */
-    public Map<Integer, Boolean> getData() {
+    public Map<Integer, Color> getData() {
 
         return this.data;
     }
@@ -74,21 +77,31 @@ public class UIDataUpdater extends Thread {
         while(this.canrun) {
 
             // Iterate all vertices and recreate data map
-            for (int key : this.vertices.keySet()) {
+            for (Vertex<AtomicReference> v : this.roundabout.getVertices()) {
 
-                // Presence of vehicle
-                boolean presence = true;
+                // Default color is GREEN (node is free)
+                Color color = Color.GREEN;
 
-                // Get value from the atomic reference
-                Object ref = this.vertices.get(key).get();
+                Object ref = v.getValue().get();
 
-                // If the value is null then vertex is vacant
-                if (ref == null) {
+                // Is entry then blue
+                if (this.roundabout.isEntry(v)) {
 
-                    presence = false;
+                    color = Color.BLUE;
+
+                // Is exit then orange
+                } else if (this.roundabout.isExit(v)) {
+
+                    color = Color.ORANGE;
+
+                // If instance of vehicle then get vehicle color
+                } else if (ref instanceof Vehicle) {
+
+                    color = ((Vehicle) ref).getColor();
                 }
 
-                this.data.replace(key, presence);
+                // Override vehicle data
+                this.data.replace(v.getKey(), color);
             }
         }
     }

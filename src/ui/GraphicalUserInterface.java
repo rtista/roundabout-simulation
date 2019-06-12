@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Class provides a GUI which allows the user to see
@@ -70,18 +71,13 @@ public class GraphicalUserInterface extends JPanel {
 
         int i = 0;
 
-        Map<Integer, Boolean> data = this.updater.getData();
+        Map<Integer, Color> data = this.updater.getData();
 
         // Draw
         for (int key : data.keySet()) {
 
-            // Vacant is green
-            g2d.setColor(Color.GREEN);
-
-            // Occupied is red
-            if (data.get(key)) {
-                g2d.setColor(Color.RED);
-            }
+            // Get color from map
+            g2d.setColor(data.get(key));
 
             // Calculate circle position
             double t = 2 * Math.PI * i / data.size();
@@ -94,7 +90,7 @@ public class GraphicalUserInterface extends JPanel {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
         // Create Roundabout Graph
         double radius = 20;
@@ -106,7 +102,7 @@ public class GraphicalUserInterface extends JPanel {
                 radius, nLanes, nExits, nEntries);
 
         // Create watcher thread
-        UIDataUpdater updater = new UIDataUpdater(roundabout.getVertices());
+        UIDataUpdater updater = new UIDataUpdater(roundabout);
         updater.start();
 
         // Create GUI elements
@@ -127,6 +123,7 @@ public class GraphicalUserInterface extends JPanel {
         // Create Vehicle
         for (int i = 0; i < cars; i++) {
             Car car = new Car(
+                    new Color(generator.nextFloat(), generator.nextFloat(), generator.nextFloat()),
                     1,
                     4,
                     5,
@@ -134,30 +131,35 @@ public class GraphicalUserInterface extends JPanel {
             car.start();
         }
 
-        /*int cars = 5;
-
-        // Create Vehicle
-        for (int i = 0; i < cars; i++) {
-            Car car = new Car(
-                    generator.nextInt(4),
-                    generator.nextInt(4),
-                    5,
-                    roundabout);
-            car.start();
-        }*/
-
         // Query watcher thread and call repaint
-        while (true) {
+        new Thread(
+          () -> {
+              while (true) {
 
-            // Repaint GUI
-            gui.repaint();
+                  // Repaint GUI
+                  gui.repaint();
 
-            // Sleep for half a second
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+                  // Sleep for a fifth of a second
+                  try {
+                      Thread.sleep(200);
+                  } catch (InterruptedException e) {
+                      e.printStackTrace();
+                  }
+              }
+          }
+        ).start();
+
+        // Read from user input
+        do {
+
+            Scanner reader = new Scanner(System.in);  // Reading from System.in
+            System.out.println("Press enter to create a car");
+
+            reader.nextLine();
+
+            new Car(new Color(generator.nextFloat(), generator.nextFloat(), generator.nextFloat()),
+                    1, 4, 5, roundabout).start();
+
+        } while(true);
     }
 }

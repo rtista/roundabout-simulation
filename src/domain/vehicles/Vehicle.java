@@ -3,6 +3,7 @@ package domain.vehicles;
 import domain.roundabout.Roundabout;
 import graphv2.Vertex;
 
+import java.awt.*;
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
@@ -18,6 +19,11 @@ public class Vehicle extends Thread {
      * Default: Vehicle_{THREAD_ID}
      */
     private String label;
+
+    /**
+     * The vehicle color for identification purposes.
+     */
+    private Color color;
 
     /**
      * The roundabout entry from which the vehicle is coming.
@@ -64,9 +70,10 @@ public class Vehicle extends Thread {
      * @param acceleration The vehicle's acceleration.
      * @param roundabout   The roundabout data structure.
      */
-    public Vehicle(int source, int destination, double acceleration, Roundabout roundabout) {
+    public Vehicle(Color color, int source, int destination, double acceleration, Roundabout roundabout) {
 
         this.label = null;
+        this.color = color;
         this.source = source;
         this.destination = destination;
         this.speed = 0;
@@ -83,14 +90,24 @@ public class Vehicle extends Thread {
      * @param acceleration The vehicle's acceleration.
      * @param roundabout   The roundabout data structure.
      */
-    public Vehicle(String label, int source, int destination, double acceleration, Roundabout roundabout) {
+    public Vehicle(String label, Color color, int source, int destination, double acceleration, Roundabout roundabout) {
 
         this.label = label;
+        this.color = color;
         this.source = source;
         this.destination = destination;
         this.speed = 0;
         this.acceleration = acceleration;
         this.roundabout = roundabout;
+    }
+
+    /**
+     * Returns the vehicle color.
+     *
+     * @return Color
+     */
+    public Color getColor() {
+        return this.color;
     }
 
     /**
