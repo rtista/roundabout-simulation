@@ -6,6 +6,7 @@ import graphv2.Vertex;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -75,7 +76,7 @@ public class Factory {
             // Calculate number of nodes required to represent the lane
             double laneRadius = radius - (i * LANE_WIDTH) - (LANE_WIDTH / 2);
             double perimeter = (2 * Math.PI * laneRadius);
-            int nodes = (int) Math.round(perimeter * VERTEX_PER_METER_RATIO);
+            int nodes = (int) (perimeter * VERTEX_PER_METER_RATIO);
 
             /*
              * Create and add first node
@@ -100,7 +101,7 @@ public class Factory {
                 // Set destination to origin
                 curr = destination;
 
-                // Create entries and exits only on outer lane
+                // Outer Lane - Create entries and exits
                 if (i == 0) {
 
                     // Place entry or exit
@@ -126,7 +127,7 @@ public class Factory {
 
                             entriesCreated++;
 
-                        // Create exit
+                            // Create exit
                         } else if (exitsCreated < nExits) {
 
                             // Add exit vertex - Weight for exit nodes is -2
@@ -148,6 +149,53 @@ public class Factory {
 
             // Connect last vertex to first vertex for each lane
             graph.addEdge(curr.getKey(), origin.getKey());
+        }
+
+        // Create links between lanes
+        for (int i = 0; i < nLanes -1; i++) {
+
+            System.out.println("Lane " + i + " vertices: " + graph.getVertices(i).size());
+            System.out.println("Lane " + (i + 1) + " vertices: " + graph.getVertices(i + 1).size());
+
+            // Get vertices from outer lane and inner lane
+            ArrayList<Vertex<AtomicReference>> outer = new ArrayList<>(graph.getVertices(i));
+            ArrayList<Vertex<AtomicReference>> inner = new ArrayList<>(graph.getVertices(i + 1));
+
+            // Calculate vertex count difference
+            int dif = outer.size() - inner.size();
+
+            // Keep track of inner vertex index as it is different
+            int innerIndex = 0;
+
+            // Iterate outer lane vertices and create edges
+            for (int j = 0; j < outer.size(); j++) {
+
+                // Keep track of next outer vertex index as it is different
+                int nextOuterIndex = j + 1;
+
+                // When end is reached the next outer node is the first node
+                if (nextOuterIndex == outer.size()) {
+                    nextOuterIndex = 0;
+                }
+
+                // Ignore every dif nth node
+                if (j % dif != 0) {
+
+                    // Get current and next outer vertices and inner lane vertex
+                    Vertex outerVert = outer.get(j);
+                    Vertex nextOuterVert = outer.get(nextOuterIndex);
+                    Vertex innerVert = inner.get(innerIndex);
+
+                    // Add edge from outer node to inner node
+                    graph.addEdge(outerVert.getKey(), innerVert.getKey());
+
+                    // Add edge from inner node to next outer node
+                    graph.addEdge(innerVert.getKey(), nextOuterVert.getKey());
+
+                    // Increment innerIndex
+                    innerIndex++;
+                }
+            }
         }
 
         return new Roundabout(graph, entryNodes, exitNodes);
