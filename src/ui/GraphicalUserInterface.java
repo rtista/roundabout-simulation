@@ -66,14 +66,14 @@ public class GraphicalUserInterface extends JPanel {
         r = 4 * m / 5;
         int r2 = Math.abs(m - r) / 2;
 
-        // Draw circumference
+        // Draw circumference (roundabout lane)
         g2d.drawOval(a - r, b - r, 2 * r, 2 * r);
 
         int i = 0;
 
         Map<Integer, Color> data = this.updater.getData();
 
-        // Draw
+        // Draw nodes
         for (int key : data.keySet()) {
 
             // Get color from map
@@ -93,8 +93,8 @@ public class GraphicalUserInterface extends JPanel {
     public static void main(String[] args) {
 
         // Create Roundabout Graph
-        double radius = 20;
-        int nLanes = 1;
+        double radius = 17;
+        int nLanes = 2;
         int nExits = 4;
         int nEntries = 4;
 
@@ -117,19 +117,6 @@ public class GraphicalUserInterface extends JPanel {
 
         // Create Random generator
         Random generator = new Random();
-
-        int cars = 5;
-
-        // Create Vehicle
-        for (int i = 0; i < cars; i++) {
-            Car car = new Car(
-                    new Color(generator.nextFloat(), generator.nextFloat(), generator.nextFloat()),
-                    1,
-                    4,
-                    5,
-                    roundabout);
-            car.start();
-        }
 
         // Query watcher thread and call repaint
         new Thread(
