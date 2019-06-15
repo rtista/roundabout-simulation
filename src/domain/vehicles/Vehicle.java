@@ -16,45 +16,38 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class Vehicle extends Thread {
 
     /**
-     * The vehicle label for identification purposes.
-     * Default: Vehicle_{THREAD_ID}
-     */
-    protected String label;
-
-    /**
-     * The vehicle color for identification purposes.
-     */
-    private Color color;
-
-    /**
      * The roundabout entry from which the vehicle is coming.
      */
     private final int source;
-
     /**
      * The roundabout exit which the vehicle is taking.
      */
     private final int destination;
-
+    /**
+     * The vehicle label for identification purposes.
+     * Default: Vehicle_{THREAD_ID}
+     */
+    protected String label;
     /**
      * The vehicle's acceleration.
      */
     protected float acceleration;
-
-    /**
-     * The vehicle's current speed.
-     */
-    private float speed;
-
-    /**
-     * The vehicle's maximum speed.
-     */
-    private float maxSpeed;
-
     /**
      * The roundabout data structure
      */
     protected Roundabout roundabout;
+    /**
+     * The vehicle color for identification purposes.
+     */
+    private Color color;
+    /**
+     * The vehicle's current speed.
+     */
+    private float speed;
+    /**
+     * The vehicle's maximum speed.
+     */
+    private float maxSpeed;
 
     /**
      * Vehicle empty constructor.
@@ -137,9 +130,8 @@ public abstract class Vehicle extends Thread {
      * Returns the vehicle route in the roundabout.
      *
      * @param entry The entry the vehicle is approaching.
-     * @param exit The exit the vehicle intends to take.
-     *
-     * @return Deque<Vertex<AtomicReference>> The vehicle route in the roundabout
+     * @param exit  The exit the vehicle intends to take.
+     * @return Deque<Vertex < AtomicReference>> The vehicle route in the roundabout
      */
     protected abstract Deque<Vertex<AtomicReference>> getVehicleRoute(int entry, int exit);
 
@@ -147,7 +139,6 @@ public abstract class Vehicle extends Thread {
      * Accelerates the vehicle.
      *
      * @param currentSpeed The current speed before accelerating.
-     *
      * @return float The new current speed after accelerating.
      */
     protected abstract float accelerate(float currentSpeed);
@@ -156,7 +147,6 @@ public abstract class Vehicle extends Thread {
      * Decelerates the vehicle.
      *
      * @param currentSpeed The current speed before decelerating.
-     *
      * @return float The new current speed after deceleration.
      */
     protected abstract float decelerate(float currentSpeed);
@@ -187,7 +177,7 @@ public abstract class Vehicle extends Thread {
 
     /**
      * This will run in a separate thread.
-     *
+     * <p>
      * The method replicates the driver behaviour.
      * 1. Waits in queue for its turn.
      * 2. Asks which path should it follow to the roundabout object.
@@ -212,7 +202,7 @@ public abstract class Vehicle extends Thread {
         ConcurrentLinkedQueue<Vehicle> entry = this.roundabout.queueOnEntry(this, this.source);
 
         // Wait for first in queue
-        while(entry.peek() != this) this.vehicleSleep(waitOnQueue());
+        while (entry.peek() != this) this.vehicleSleep(waitOnQueue());
 
         // Traverse Path
         for (Vertex<AtomicReference> v : path) {
@@ -224,7 +214,7 @@ public abstract class Vehicle extends Thread {
             while (!v.getValue().compareAndSet(null, this)) {
 
                 // Decelerate to not crash into another vehicle
-                while(this.speed > 0) this.speed = decelerate(this.speed);
+                while (this.speed > 0) this.speed = decelerate(this.speed);
 
                 System.out.println(this.label + ": Waiting for next node " + v.getKey());
 
@@ -233,7 +223,7 @@ public abstract class Vehicle extends Thread {
             }
 
             // Accelerate for next in case it has stopped
-            while(this.speed <= 0) this.speed = accelerate(this.speed);
+            while (this.speed <= 0) this.speed = accelerate(this.speed);
 
             System.out.println(this.label + ": Moving to node " + v.getKey() + " for " + travel());
 
@@ -244,13 +234,13 @@ public abstract class Vehicle extends Thread {
             if (path.peekFirst() == v) entry.remove(this);
 
             // Release last node
-            while(last != null && !last.getValue().compareAndSet(this, null));
+            while (last != null && !last.getValue().compareAndSet(this, null)) ;
 
             // Assign v as the last node which it travelled to
             last = v;
         }
 
         // Release last node
-        while(!last.getValue().compareAndSet(this, null));
+        while (!last.getValue().compareAndSet(this, null)) ;
     }
 }

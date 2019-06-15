@@ -5,8 +5,9 @@ import domain.vehicles.Vehicle;
 import graphv2.Vertex;
 
 import java.awt.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -66,7 +67,7 @@ public class UIDataUpdater extends Thread {
     /**
      * Get vertex vacancy data.
      *
-     * @return Map<Integer, TreeMap<Integer, Color>>
+     * @return Map<Integer, TreeMap < Integer, Color>>
      */
     public Map<Integer, TreeMap<Integer, Color>> getData() {
 

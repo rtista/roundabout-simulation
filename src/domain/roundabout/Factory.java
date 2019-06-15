@@ -6,7 +6,6 @@ import graphv2.Vertex;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -44,6 +43,7 @@ public class Factory {
 
         return instance;
     }
+
     /**
      * Returns a roundabout built with the given parameters.
      *
@@ -51,7 +51,6 @@ public class Factory {
      * @param nLanes   The number of lanes in the roundabout.
      * @param nEntries The number of entries in the roundabout.
      * @param nExits   The number of exits in the roundabout.
-     *
      * @return Roundabout
      */
     public Roundabout buildRoundabout(double radius, int nLanes, int nEntries, int nExits) {
@@ -161,7 +160,7 @@ public class Factory {
         }
 
         // Create links between lanes
-        for (int i = 0; i < nLanes -1; i++) {
+        for (int i = 0; i < nLanes - 1; i++) {
 
             System.out.println("Lane " + i + " vertices: " + graph.getVertices(i).size());
             System.out.println("Lane " + (i + 1) + " vertices: " + graph.getVertices(i + 1).size());

@@ -1,18 +1,8 @@
 import domain.roundabout.Factory;
 import domain.roundabout.Roundabout;
-import domain.vehicles.AggressiveBehaviourLight;
-import domain.vehicles.DefaultBehaviourHeavy;
-import domain.vehicles.DefaultBehaviourLight;
 import ui.GUI;
-import ui.RoundaboutVisualizer;
-import ui.SpawnPanel;
-import ui.UIDataUpdater;
 
-import javax.swing.*;
-import java.awt.*;
 import java.security.InvalidParameterException;
-import java.util.Random;
-import java.util.Scanner;
 
 /**
  * Main class.
@@ -21,6 +11,7 @@ public class Main {
 
     /**
      * Main method.
+     *
      * @param args Command line arguments.
      */
     public static void main(String[] args) {

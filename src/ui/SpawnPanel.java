@@ -12,34 +12,29 @@ import java.util.Random;
 public class SpawnPanel extends JPanel {
 
     /**
+     * Random number generator.
+     */
+    private final Random generator = new Random();
+    /**
      * Vehicle types combo box.
      */
     private JComboBox<String> vehicleTypes;
-
     /**
      * Entry values.
      */
     private JSpinner entrySpinner;
-
     /**
      * Exit values.
      */
     private JSpinner exitSpinner;
-
     /**
      * The spawn button.
      */
     private JButton spawnButton;
-
     /**
      * The roundabout object.
      */
     private Roundabout roundabout;
-
-    /**
-     * Random number generator.
-     */
-    private final Random generator = new Random();
 
     /**
      *
@@ -88,7 +83,7 @@ public class SpawnPanel extends JPanel {
                         new Color(this.generator.nextFloat(), this.generator.nextFloat(), this.generator.nextFloat()),
                         entryNumber, exitNumber, this.roundabout).start();
 
-            // Light vehicle with default behaviour
+                // Light vehicle with default behaviour
             } else if (vehicleType.equals("light:default")) {
 
                 System.out.println("Creating light default");
@@ -97,7 +92,7 @@ public class SpawnPanel extends JPanel {
                         new Color(this.generator.nextFloat(), this.generator.nextFloat(), this.generator.nextFloat()),
                         entryNumber, exitNumber, this.roundabout).start();
 
-            // Light vehicle with aggressive behaviour
+                // Light vehicle with aggressive behaviour
             } else if (vehicleType.equals("light:aggressive")) {
 
                 System.out.println("Creating light default");

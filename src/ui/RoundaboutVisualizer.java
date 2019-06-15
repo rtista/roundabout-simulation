@@ -2,7 +2,8 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Class provides a GUI which allows the user to see
@@ -12,20 +13,17 @@ import java.util.*;
 public class RoundaboutVisualizer extends JPanel {
 
     /**
+     * Circumference size.
+     */
+    private static final int SIZE = 256;
+    /**
      * A map of the vertex keys against the respective value.
      */
     private UIDataUpdater updater;
-
     /**
      * The lane perimeter map.
      */
     private Map<Integer, Double> lanePerimeterMap;
-
-    /**
-     * Circumference size.
-     */
-    private static final int SIZE = 256;
-
     /**
      *
      */

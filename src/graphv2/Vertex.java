@@ -31,7 +31,7 @@ public class Vertex<V> {
     /**
      * Vertex constructor.
      *
-     * @param key The vertex key.
+     * @param key   The vertex key.
      * @param value The vertex value.
      */
     public Vertex(int key, V value) {
@@ -43,8 +43,8 @@ public class Vertex<V> {
     /**
      * Weighed Vertex constructor.
      *
-     * @param key The vertex key.
-     * @param value The vertex value.
+     * @param key    The vertex key.
+     * @param value  The vertex value.
      * @param weight The vertex weight.
      */
     public Vertex(int key, V value, int weight) {

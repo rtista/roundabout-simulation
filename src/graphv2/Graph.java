@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 /**
  * Represents a graph as an adjacency list.
- *
+ * <p>
  * Each vertex will be a key on the Adjacency Map and
  * will be mapped to a list of all its adjacent vertices.
  *
@@ -54,7 +54,7 @@ public class Graph<V> {
     /**
      * Returns the vertices list.
      *
-     * @return Collection<Vertex<V>>
+     * @return Collection<Vertex < V>>
      */
     public Collection<Vertex<V>> getVertices() {
 
@@ -65,8 +65,7 @@ public class Graph<V> {
      * Returns the adjacent vertices of the given vertex.
      *
      * @param key The vertex key.
-     *
-     * @return List<Vertex<V>
+     * @return List<Vertex < V>
      */
     public List<Vertex<V>> getAdjacentVertices(int key) {
 
@@ -78,7 +77,6 @@ public class Graph<V> {
      * Returns the vertex with the given key.
      *
      * @param key The vertex key.
-     *
      * @return Vertex<V>
      */
     public Vertex<V> getVertex(int key) {
@@ -90,8 +88,7 @@ public class Graph<V> {
      * Returns a collection of the vertices with the given weight.
      *
      * @param weight The vertex weight.
-     *
-     * @return Collection<WeighedVertex<V>>
+     * @return Collection<WeighedVertex < V>>
      */
     public Collection<Vertex<V>> getVertices(int weight) {
 
@@ -130,7 +127,7 @@ public class Graph<V> {
         this.adjacencyMap.remove(v);
 
         // Iterate all graph vertices adjacency map and remove vertex
-        for (List<Vertex<V>> adjList: this.adjacencyMap.values()) {
+        for (List<Vertex<V>> adjList : this.adjacencyMap.values()) {
 
             // Remove vertex
             adjList.remove(v);

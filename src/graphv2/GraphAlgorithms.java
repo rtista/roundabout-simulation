@@ -15,7 +15,7 @@ public class GraphAlgorithms {
      * @param allPaths    All the paths already found.
      */
     private static void allPaths(Graph graph, Vertex source, Vertex destination, Map<Vertex, Boolean> isVisited,
-                          Deque<Vertex> path, List<Deque<Vertex>> allPaths, boolean outerOnly) {
+                                 Deque<Vertex> path, List<Deque<Vertex>> allPaths, boolean outerOnly) {
 
         // Mark the current node as visited
         isVisited.replace(source, true);
@@ -35,7 +35,7 @@ public class GraphAlgorithms {
         ArrayList<Vertex> adj = (ArrayList<Vertex>) graph.getAdjacentVertices(source.getKey());
 
         // Recursive call for all the vertices adjacent to current vertex
-        for (Vertex v: adj) {
+        for (Vertex v : adj) {
 
             // Ignore all adjacent vertices not in the outer lane
             if (outerOnly && v.getWeight() > 0) {
@@ -61,15 +61,13 @@ public class GraphAlgorithms {
     /**
      * Returns all the paths from a source vertex to another.
      *
-     * @param graph The graph instance.
-     * @param source The source vertex key.
+     * @param graph       The graph instance.
+     * @param source      The source vertex key.
      * @param destination The destination vertex key.
-     * @param outerOnly Whether only to use the outer lane or not.
-     *
-     * @return ArrayList<Deque<Vertex>>
+     * @param outerOnly   Whether only to use the outer lane or not.
+     * @return ArrayList<Deque < Vertex>>
      */
-    public static ArrayList<Deque<Vertex>> getAllPaths(Graph graph, int source, int destination, boolean outerOnly)
-    {
+    public static ArrayList<Deque<Vertex>> getAllPaths(Graph graph, int source, int destination, boolean outerOnly) {
         ArrayList<Vertex> list = new ArrayList<>();
 
         // If outer only use only outer lane vertices, entries and exits
@@ -109,10 +107,9 @@ public class GraphAlgorithms {
     /**
      * Returns the shortest path from a vertex to another.
      *
-     * @param graph The graph instance.
-     * @param source The source vertex key.
+     * @param graph       The graph instance.
+     * @param source      The source vertex key.
      * @param destination The destination vertex key.
-     *
      * @return Deque<Vertex>
      */
     public static Deque<Vertex> getShortestPath(Graph graph, int source, int destination) {
@@ -125,7 +122,7 @@ public class GraphAlgorithms {
         Deque<Vertex> shortestPath = null;
 
         // Iterate all paths and return the shortest
-        for(Deque<Vertex> path: getAllPaths(graph, source, destination, false)) {
+        for (Deque<Vertex> path : getAllPaths(graph, source, destination, false)) {
 
             paths++;
 
@@ -146,10 +143,9 @@ public class GraphAlgorithms {
     /**
      * Returns the outer lane path from a vertex to another.
      *
-     * @param graph The graph instance.
-     * @param source The source vertex key.
+     * @param graph       The graph instance.
+     * @param source      The source vertex key.
      * @param destination The destination vertex key.
-     *
      * @return Deque<Vertex>
      */
     public static Deque<Vertex> getOuterLanePath(Graph graph, int source, int destination) {
@@ -159,7 +155,7 @@ public class GraphAlgorithms {
         int paths = 0;
 
         // Iterate all paths and return the shortest
-        for(Deque<Vertex> path: getAllPaths(graph, source, destination, true)) {
+        for (Deque<Vertex> path : getAllPaths(graph, source, destination, true)) {
 
             // If null or shorter path, override variable
             if (outerPath == null || path.size() < outerPath.size()) {

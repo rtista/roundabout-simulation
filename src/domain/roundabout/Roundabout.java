@@ -6,7 +6,10 @@ import graphv2.Graph;
 import graphv2.GraphAlgorithms;
 import graphv2.Vertex;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,9 +41,9 @@ public class Roundabout {
     /**
      * Roundabout constructor.
      *
-     * @param graph The roundabout graph.
-     * @param entryNodes The entry nodes map.
-     * @param exitNodes The exit nodes map.
+     * @param graph            The roundabout graph.
+     * @param entryNodes       The entry nodes map.
+     * @param exitNodes        The exit nodes map.
      * @param lanePerimeterMap The mapping of the lanes to its perimeter.
      */
     public Roundabout(Graph<AtomicReference> graph,
@@ -51,13 +54,13 @@ public class Roundabout {
         this.entryNodes = entryNodes;
         this.exitNodes = exitNodes;
         this.graph = graph;
-        this.lanePerimeterMap= lanePerimeterMap;
+        this.lanePerimeterMap = lanePerimeterMap;
     }
 
     /**
      * Returns the vertices in the graph.
      *
-     * @return Collection<Vertex<AtomicReference>>
+     * @return Collection<Vertex < AtomicReference>>
      */
     public Collection<Vertex<AtomicReference>> getVertices() {
 
@@ -95,7 +98,6 @@ public class Roundabout {
      * Check if vertex is entry.
      *
      * @param vertex The vertex to check.
-     *
      * @return boolean
      */
     public boolean isEntry(Vertex<AtomicReference> vertex) {
@@ -107,7 +109,6 @@ public class Roundabout {
      * Check if vertex is exit.
      *
      * @param vertex The vertex to check.
-     *
      * @return boolean
      */
     public boolean isExit(Vertex<AtomicReference> vertex) {
@@ -118,9 +119,8 @@ public class Roundabout {
     /**
      * Queues the vehicle on a certain entry.
      *
-     * @param v The vehicle to be queued.
+     * @param v     The vehicle to be queued.
      * @param entry The entry in which to be queued.
-     *
      * @return ConcurrentLinkedQueue<Vehicle> The queue.
      */
     public ConcurrentLinkedQueue<Vehicle> queueOnEntry(Vehicle v, int entry) {
@@ -139,8 +139,7 @@ public class Roundabout {
      * Returns a list with the vehicle route inside the roundabout graph.
      *
      * @param entry The entry the vehicle is coming from.
-     * @param exit The exit the vehicle is taking.
-     *
+     * @param exit  The exit the vehicle is taking.
      * @return Deque<AtomicReference>
      */
     public Deque<Vertex<AtomicReference>> getVehicleRoute(int entry, int exit, boolean heavy) {
@@ -165,7 +164,7 @@ public class Roundabout {
 
         // Add all elements from first route
         StringBuilder builder = new StringBuilder().append("Vehicle Route: Start -> ");
-        for(Vertex vertex: route) {
+        for (Vertex vertex : route) {
 
             shortestRoute.add(vertex);
             builder.append("(").append(vertex.getKey()).append(") -> ");
