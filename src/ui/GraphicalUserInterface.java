@@ -164,11 +164,10 @@ public class GraphicalUserInterface extends JPanel {
 
             reader.nextLine();
 
-            new DefaultBehaviourCar(new Color(generator.nextFloat(), generator.nextFloat(), generator.nextFloat()),
+            new DefaultBehaviourCar(
+                    new Color(generator.nextFloat(), generator.nextFloat(), generator.nextFloat()),
                     1,
                     4,
-                    5,
-                    60,
                     roundabout).start();
 
         } while (true);

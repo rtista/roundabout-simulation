@@ -1,5 +1,6 @@
 package domain.vehicles;
 
+import domain.roundabout.Factory;
 import domain.roundabout.Roundabout;
 import graphv2.Vertex;
 
@@ -175,11 +176,14 @@ public abstract class Vehicle extends Thread {
     protected abstract long waitToTravel();
 
     /**
-     * Travels between two points.
+     * Travels between two points based on the general rules of physics.
      *
      * @return long The number of milliseconds to move from one point to another.
      */
-    protected abstract long travel();
+    protected long travel() {
+
+        return Math.round(((1 / Factory.VERTEX_PER_METER_RATIO) / (this.speed / 3.6)) * 1000);
+    }
 
     /**
      * This will run in a separate thread.

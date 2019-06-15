@@ -7,11 +7,15 @@ import java.awt.*;
 import java.util.Deque;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class DefaultBehaviourCar extends Vehicle {
+/**
+ * Represent a vehicle which is always attempting to move to the next point fast.
+ * It accelerates more and has higher max speed meaning it travels the roundabout faster.
+ */
+public class AggressiveBehaviourCar extends Vehicle {
 
 
-    public DefaultBehaviourCar(Color color, int source, int destination, Roundabout roundabout) {
-        super(color, source, destination, 5, 40, roundabout);
+    public AggressiveBehaviourCar(Color color, int source, int destination, Roundabout roundabout) {
+        super(color, source, destination, 10, 60, roundabout);
     }
 
     @Override
@@ -34,12 +38,12 @@ public class DefaultBehaviourCar extends Vehicle {
     @Override
     protected long waitOnQueue() {
 
-        return 1000;
+        return 100;
     }
 
     @Override
     protected long waitToTravel() {
 
-        return 1000;
+        return 100;
     }
 }
