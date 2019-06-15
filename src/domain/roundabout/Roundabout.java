@@ -120,14 +120,21 @@ public class Roundabout {
      *
      * @return Deque<AtomicReference>
      */
-    public Deque<Vertex<AtomicReference>> getVehicleShortestRoute(int entry, int exit) {
+    public Deque<Vertex<AtomicReference>> getVehicleRoute(int entry, int exit, boolean heavy) {
 
         // Get source and destination vertex
         int origin = this.entryNodes.get(entry).getKey();
         int destination = this.exitNodes.get(exit).getKey();
 
         // Get all paths from source to destination but remove entry node
-        Deque<Vertex> route = GraphAlgorithms.getShortestPath(this.graph, origin, destination);
+        Deque<Vertex> route;
+        if (heavy) {
+
+            route = GraphAlgorithms.getOuterLanePath(this.graph, origin, destination);
+
+        } else {
+            route = GraphAlgorithms.getShortestPath(this.graph, origin, destination);
+        }
         route.removeFirst();
 
         // Convert into Deque of Vertex value

@@ -1,6 +1,6 @@
 import domain.roundabout.Factory;
 import domain.roundabout.Roundabout;
-import domain.vehicles.DefaultBehaviourCar;
+import domain.vehicles.DefaultBehaviourHeavy;
 import ui.GraphicalUserInterface;
 import ui.UIDataUpdater;
 
@@ -32,7 +32,7 @@ public class Main {
 
         // Holds all the Vehicle children classes
         /*final String[] VEHICLE_CLASSES = {
-            "domain.vehicles.DefaultBehaviourCar",
+            "domain.vehicles.DefaultBehaviourLight",
             "domain.vehicles.Motorcycle"
         };
 
@@ -103,7 +103,7 @@ public class Main {
 
             reader.nextLine();
 
-            new DefaultBehaviourCar(
+            new DefaultBehaviourHeavy(
                     new Color(generator.nextFloat(), generator.nextFloat(), generator.nextFloat()),
                     1,
                     4,

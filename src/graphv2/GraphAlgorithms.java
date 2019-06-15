@@ -15,7 +15,7 @@ public class GraphAlgorithms {
      * @param allPaths    All the paths already found.
      */
     private static void allPaths(Graph graph, Vertex source, Vertex destination, Map<Vertex, Boolean> isVisited,
-                          Deque<Vertex> path, List<Deque<Vertex>> allPaths) {
+                          Deque<Vertex> path, List<Deque<Vertex>> allPaths, boolean outerOnly) {
 
         // Mark the current node as visited
         isVisited.replace(source, true);
@@ -37,12 +37,17 @@ public class GraphAlgorithms {
         // Recursive call for all the vertices adjacent to current vertex
         for (Vertex v: adj) {
 
+            // Ignore all adjacent vertices not in the outer lane
+            if (outerOnly && v.getWeight() > 0) {
+                continue;
+            }
+
             // If this vertex has not been visited
             if (!isVisited.get(v)) {
 
                 // Store current node in path[]
                 path.add(v);
-                allPaths(graph, v, destination, isVisited, path, allPaths);
+                allPaths(graph, v, destination, isVisited, path, allPaths, outerOnly);
 
                 // Remove current node from paths
                 path.removeLast();
@@ -59,12 +64,24 @@ public class GraphAlgorithms {
      * @param graph The graph instance.
      * @param source The source vertex key.
      * @param destination The destination vertex key.
+     * @param outerOnly Whether only to use the outer lane or not.
      *
      * @return ArrayList<Deque<Vertex>>
      */
-    public static ArrayList<Deque<Vertex>> getAllPaths(Graph graph, int source, int destination)
+    public static ArrayList<Deque<Vertex>> getAllPaths(Graph graph, int source, int destination, boolean outerOnly)
     {
-        ArrayList<Vertex> list = new ArrayList<>(graph.getVertices());
+        ArrayList<Vertex> list = new ArrayList<>();
+
+        // If outer only use only outer lane vertices, entries and exits
+        if (outerOnly) {
+
+            list.addAll(graph.getVertices(0));
+            list.addAll(graph.getVertices(-1));
+            list.addAll(graph.getVertices(-2));
+
+        } else {
+            list.addAll(graph.getVertices());
+        }
 
         // Create is visited with all false
         Map<Vertex, Boolean> isVisited = new HashMap<>();
@@ -84,7 +101,7 @@ public class GraphAlgorithms {
         ArrayList<Deque<Vertex>> allPaths = new ArrayList<>();
 
         // Call recursive utility
-        allPaths(graph, sourcev, destinationv, isVisited, path, allPaths);
+        allPaths(graph, sourcev, destinationv, isVisited, path, allPaths, outerOnly);
 
         return allPaths;
     }
@@ -108,7 +125,7 @@ public class GraphAlgorithms {
         Deque<Vertex> shortestPath = null;
 
         // Iterate all paths and return the shortest
-        for(Deque<Vertex> path: getAllPaths(graph, source, destination)) {
+        for(Deque<Vertex> path: getAllPaths(graph, source, destination, false)) {
 
             paths++;
 
@@ -124,5 +141,37 @@ public class GraphAlgorithms {
         System.out.println("Shortest Path Execution Time: " + ((System.currentTimeMillis() / 1000L) - starttime) + " seconds");
 
         return shortestPath;
+    }
+
+    /**
+     * Returns the outer lane path from a vertex to another.
+     *
+     * @param graph The graph instance.
+     * @param source The source vertex key.
+     * @param destination The destination vertex key.
+     *
+     * @return Deque<Vertex>
+     */
+    public static Deque<Vertex> getOuterLanePath(Graph graph, int source, int destination) {
+
+        Deque<Vertex> outerPath = null;
+
+        int paths = 0;
+
+        // Iterate all paths and return the shortest
+        for(Deque<Vertex> path: getAllPaths(graph, source, destination, true)) {
+
+            // If null or shorter path, override variable
+            if (outerPath == null || path.size() < outerPath.size()) {
+
+                outerPath = path;
+            }
+            paths++;
+        }
+
+        // TODO: Remove this debug
+        System.out.println("Paths Computed: " + paths);
+
+        return outerPath;
     }
 }

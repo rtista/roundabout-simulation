@@ -7,16 +7,16 @@ import java.awt.*;
 import java.util.Deque;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class DefaultBehaviourCar extends Vehicle {
+public class DefaultBehaviourHeavy extends Vehicle {
 
 
-    public DefaultBehaviourCar(Color color, int source, int destination, Roundabout roundabout) {
+    public DefaultBehaviourHeavy(Color color, int source, int destination, Roundabout roundabout) {
         super(color, source, destination, 5, 40, roundabout);
     }
 
     @Override
     protected Deque<Vertex<AtomicReference>> getVehicleRoute(int entry, int exit) {
-        return this.roundabout.getVehicleShortestRoute(entry, exit);
+        return this.roundabout.getVehicleRoute(entry, exit, true);
     }
 
     @Override

@@ -229,9 +229,7 @@ public abstract class Vehicle extends Thread {
                 System.out.println(this.label + ": Waiting for next node " + v.getKey());
 
                 // Wait
-                long l = waitToTravel();
-                System.out.println(this.label + ": Waiting for " + l + " seconds");
-                this.vehicleSleep(l);
+                this.vehicleSleep(waitToTravel());
             }
 
             // Accelerate for next in case it has stopped

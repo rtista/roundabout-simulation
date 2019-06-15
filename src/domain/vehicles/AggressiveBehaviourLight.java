@@ -11,16 +11,16 @@ import java.util.concurrent.atomic.AtomicReference;
  * Represent a vehicle which is always attempting to move to the next point fast.
  * It accelerates more and has higher max speed meaning it travels the roundabout faster.
  */
-public class AggressiveBehaviourCar extends Vehicle {
+public class AggressiveBehaviourLight extends Vehicle {
 
 
-    public AggressiveBehaviourCar(Color color, int source, int destination, Roundabout roundabout) {
+    public AggressiveBehaviourLight(Color color, int source, int destination, Roundabout roundabout) {
         super(color, source, destination, 10, 60, roundabout);
     }
 
     @Override
     protected Deque<Vertex<AtomicReference>> getVehicleRoute(int entry, int exit) {
-        return this.roundabout.getVehicleShortestRoute(entry, exit);
+        return this.roundabout.getVehicleRoute(entry, exit, false);
     }
 
     @Override
