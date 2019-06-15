@@ -214,7 +214,7 @@ public abstract class Vehicle extends Thread {
         for (Vertex<AtomicReference> v : path) {
 
             // Accelerate between path nodes
-            if (this.speed < this.maxSpeed) accelerate(this.speed);
+            if (this.speed < this.maxSpeed) this.speed = accelerate(this.speed);
 
             // Move to node
             while (!v.getValue().compareAndSet(null, this)) {
