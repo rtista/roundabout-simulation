@@ -11,7 +11,7 @@ public class DefaultBehaviourHeavy extends Vehicle {
 
 
     public DefaultBehaviourHeavy(Color color, int source, int destination, Roundabout roundabout) {
-        super(color, source, destination, 5, 40, roundabout);
+        super(color, source, destination, 4, 30, roundabout);
     }
 
     @Override
@@ -34,14 +34,12 @@ public class DefaultBehaviourHeavy extends Vehicle {
     @Override
     protected long waitOnQueue() {
 
-        System.out.println(this.label + ": Waiting on entry queue.");
         return 1000;
     }
 
     @Override
     protected long waitToTravel() {
 
-        System.out.println(this.label + ": Waiting on entry queue.");
         return 1000;
     }
 }

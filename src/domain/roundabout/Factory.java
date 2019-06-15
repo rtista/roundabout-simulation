@@ -65,6 +65,7 @@ public class Factory {
         Graph<AtomicReference> graph = new Graph<>(true);
         Map<Integer, Vertex<AtomicReference>> exitNodes = new HashMap<>();
         Map<Integer, Vertex<AtomicReference>> entryNodes = new HashMap<>();
+        Map<Integer, Double> lanePerimeterMap = new HashMap<>();
 
         // For each of the lanes to be created
         for (int i = 0; i < nLanes; i++) {
@@ -77,6 +78,9 @@ public class Factory {
             double laneRadius = radius - (i * LANE_WIDTH) - (LANE_WIDTH / 2);
             double perimeter = (2 * Math.PI * laneRadius);
             int nodes = (int) (perimeter * VERTEX_PER_METER_RATIO);
+
+            // Save perimeter on map
+            lanePerimeterMap.put(i, perimeter);
 
             // Check if graph is possible
             if (i == 0 && nodes < (nEntries + nExits)) {
@@ -208,6 +212,6 @@ public class Factory {
             }
         }
 
-        return new Roundabout(graph, entryNodes, exitNodes);
+        return new Roundabout(graph, entryNodes, exitNodes, lanePerimeterMap);
     }
 }

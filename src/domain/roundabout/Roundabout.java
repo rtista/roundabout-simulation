@@ -31,19 +31,27 @@ public class Roundabout {
     private Map<Integer, Vertex<AtomicReference>> exitNodes;
 
     /**
+     * The mapping of the lanes to its perimeter.
+     */
+    private Map<Integer, Double> lanePerimeterMap;
+
+    /**
      * Roundabout constructor.
      *
      * @param graph The roundabout graph.
      * @param entryNodes The entry nodes map.
      * @param exitNodes The exit nodes map.
+     * @param lanePerimeterMap The mapping of the lanes to its perimeter.
      */
     public Roundabout(Graph<AtomicReference> graph,
                       Map<Integer, Vertex<AtomicReference>> entryNodes,
-                      Map<Integer, Vertex<AtomicReference>> exitNodes) {
+                      Map<Integer, Vertex<AtomicReference>> exitNodes,
+                      Map<Integer, Double> lanePerimeterMap) {
 
         this.entryNodes = entryNodes;
         this.exitNodes = exitNodes;
         this.graph = graph;
+        this.lanePerimeterMap= lanePerimeterMap;
     }
 
     /**
@@ -57,15 +65,12 @@ public class Roundabout {
     }
 
     /**
-     * Returns the number of lanes in the roundabout.
+     * Returns the perimeters for each lane.
      *
-     * @return int
+     * @return Map<Integer, Double>
      */
-    public int getLaneCount() {
-
-        int nLanes = this.getVertices().stream().mapToInt(Vertex::getWeight).filter(v -> v >= 0).max().orElse(0);
-
-        return nLanes + 1;
+    public Map<Integer, Double> getLanePerimeterMap() {
+        return this.lanePerimeterMap;
     }
 
     /**

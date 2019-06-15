@@ -58,7 +58,7 @@ public class Main {
 
         // Create Roundabout Graph
         double radius = 15;
-        int nLanes = 2;
+        int nLanes = 3;
         int nExits = 4;
         int nEntries = 4;
 
@@ -83,7 +83,7 @@ public class Main {
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        GraphicalUserInterface gui = new GraphicalUserInterface(updater);
+        GraphicalUserInterface gui = new GraphicalUserInterface(updater, roundabout.getLanePerimeterMap());
         f.add(gui);
 
         f.pack();
@@ -98,7 +98,7 @@ public class Main {
         // Read from user input
         do {
 
-            Scanner reader = new Scanner(System.in);  // Reading from System.in
+            Scanner reader = new Scanner(System.in);
             System.out.println("Press enter to create a car");
 
             reader.nextLine();

@@ -17,6 +17,11 @@ public class GraphicalUserInterface extends JPanel implements Runnable {
     private UIDataUpdater updater;
 
     /**
+     * The lane perimeter map.
+     */
+    private Map<Integer, Double> lanePerimeterMap;
+
+    /**
      * Circumference size.
      */
     private static final int SIZE = 256;
@@ -33,10 +38,12 @@ public class GraphicalUserInterface extends JPanel implements Runnable {
      *
      * @param updater The roundabout graph vertices.
      */
-    public GraphicalUserInterface(UIDataUpdater updater) {
+    public GraphicalUserInterface(UIDataUpdater updater, Map<Integer, Double> lanePerimeterMap) {
         super(true);
-        this.setPreferredSize(new Dimension(SIZE, SIZE));
+        int dim = (int) Math.round(lanePerimeterMap.get(0)) * 5;
+        this.setPreferredSize(new Dimension(dim, dim));
         this.updater = updater;
+        this.lanePerimeterMap = lanePerimeterMap;
     }
 
     /**
@@ -63,7 +70,7 @@ public class GraphicalUserInterface extends JPanel implements Runnable {
             b = getHeight() / 2;
 
             // Radius of circumference
-            r = (SIZE / 2) / (i + 1);
+            r = (int) (2 * this.lanePerimeterMap.get(i));
 
             // Radius of nodes
             int r2 = 10;
