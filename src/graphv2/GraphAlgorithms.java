@@ -100,10 +100,17 @@ public class GraphAlgorithms {
      */
     public static Deque<Vertex> getShortestPath(Graph graph, int source, int destination) {
 
+        // Ask roundabout object for path
+        // TODO: Remove this debug
+        int paths = 0;
+        long starttime = System.currentTimeMillis() / 1000L;
+
         Deque<Vertex> shortestPath = null;
 
         // Iterate all paths and return the shortest
         for(Deque<Vertex> path: getAllPaths(graph, source, destination)) {
+
+            paths++;
 
             // If null or shorter path, override variable
             if (shortestPath == null || path.size() < shortestPath.size()) {
@@ -111,6 +118,10 @@ public class GraphAlgorithms {
                 shortestPath = path;
             }
         }
+
+        // TODO: Remove this debug
+        System.out.println("Paths Computed: " + paths);
+        System.out.println("Shortest Path Execution Time: " + ((System.currentTimeMillis() / 1000L) - starttime) + " seconds");
 
         return shortestPath;
     }

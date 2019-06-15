@@ -6,6 +6,7 @@ import domain.vehicles.Car;
 
 import javax.swing.*;
 import java.awt.*;
+import java.security.InvalidParameterException;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
@@ -93,13 +94,23 @@ public class GraphicalUserInterface extends JPanel {
     public static void main(String[] args) {
 
         // Create Roundabout Graph
-        double radius = 17;
+        double radius = 15;
         int nLanes = 2;
         int nExits = 4;
         int nEntries = 4;
 
-        Roundabout roundabout = Factory.getInstance().buildRoundabout(
-                radius, nLanes, nExits, nEntries);
+        Roundabout roundabout = null;
+
+        // Build roundabout
+        try {
+            roundabout = Factory.getInstance().buildRoundabout(
+                    radius, nLanes, nEntries, nExits);
+
+        } catch (InvalidParameterException e) {
+
+            System.out.println("Error: " + e.getMessage());
+            System.exit(1);
+        }
 
         // Create watcher thread
         UIDataUpdater updater = new UIDataUpdater(roundabout);
