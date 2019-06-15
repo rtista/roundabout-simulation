@@ -1,6 +1,16 @@
+import domain.roundabout.Factory;
+import domain.roundabout.Roundabout;
+import domain.vehicles.DefaultBehaviourCar;
+import ui.GraphicalUserInterface;
+import ui.UIDataUpdater;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.security.InvalidParameterException;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Main class.
@@ -46,64 +56,59 @@ public class Main {
             vehicles[i].start();
         }*/
 
+        // Create Roundabout Graph
+        double radius = 15;
+        int nLanes = 2;
+        int nExits = 4;
+        int nEntries = 4;
+
+        Roundabout roundabout = null;
+
+        // Build roundabout
+        try {
+            roundabout = Factory.getInstance().buildRoundabout(
+                    radius, nLanes, nEntries, nExits);
+
+        } catch (InvalidParameterException e) {
+
+            System.out.println("Error: " + e.getMessage());
+            System.exit(1);
+        }
+
+        // Create watcher thread
+        UIDataUpdater updater = new UIDataUpdater(roundabout);
+        updater.start();
+
+        // Create GUI elements
+        JFrame f = new JFrame();
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        GraphicalUserInterface gui = new GraphicalUserInterface(updater);
+        f.add(gui);
+
+        f.pack();
+        f.setVisible(true);
+
         // Create Random generator
         Random generator = new Random();
 
-        // Create Roundabout Graph
-        int cars = 1;
-        double radius = 12;
-        int nLanes = 1;
-        int nExits = 4;
+        // Query watcher thread and call repaint
+        new Thread(gui).start();
 
-        /*Roundabout roundabout = new Roundabout(radius, nLanes, nExits);
+        // Read from user input
+        do {
 
-        // Create watcher thread
-        UIDataUpdater ui = new UIDataUpdater(roundabout.getVertices());
-        ui.start();
+            Scanner reader = new Scanner(System.in);  // Reading from System.in
+            System.out.println("Press enter to create a car");
 
-        // Create Vehicle
-        for (int i = 0; i < cars; i++) {
-            DefaultBehaviourCar car = new DefaultBehaviourCar(
-                    // generator.nextInt(4),
-                    // generator.nextInt(4),
-                    0,
-                    3,
-                    5,
-                    roundabout);
-            car.start();
-        }
+            reader.nextLine();
 
-        final StringBuilder builder = new StringBuilder();
+            new DefaultBehaviourCar(
+                    new Color(generator.nextFloat(), generator.nextFloat(), generator.nextFloat()),
+                    1,
+                    4,
+                    roundabout).start();
 
-        // Query watcher thread and output results
-        while(true) {
-
-            // Clear builder data
-            builder.setLength(0);
-            builder.append(DASHES + "\n");
-
-            Map<Integer, Boolean> data = ui.getData();
-
-            // Iterate vertices data
-            for (int key : data.keySet()) {
-
-                builder.append("(").append(key).append(" - ").append(data.get(key)).append(") ");
-
-                // Paragraph every 6 vertices
-                if (key % 6 == 0 && key != 0) {
-                    builder.append("\n");
-                }
-            }
-
-            // Output info
-            builder.append("\n" + DASHES + "\n");
-            System.out.print(builder.toString());
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }*/
+        } while (true);
     }
 }

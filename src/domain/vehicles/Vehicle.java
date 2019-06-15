@@ -19,7 +19,7 @@ public abstract class Vehicle extends Thread {
      * The vehicle label for identification purposes.
      * Default: Vehicle_{THREAD_ID}
      */
-    private String label;
+    protected String label;
 
     /**
      * The vehicle color for identification purposes.
@@ -224,15 +224,20 @@ public abstract class Vehicle extends Thread {
             while (!v.getValue().compareAndSet(null, this)) {
 
                 // Decelerate to not crash into another vehicle
-                while(this.speed > 0) decelerate(this.speed);
+                while(this.speed > 0) this.speed = decelerate(this.speed);
 
                 System.out.println(this.label + ": Waiting for next node " + v.getKey());
 
                 // Wait
-                this.vehicleSleep(waitToTravel());
+                long l = waitToTravel();
+                System.out.println(this.label + ": Waiting for " + l + " seconds");
+                this.vehicleSleep(l);
             }
 
-            System.out.println(this.label + ": Moving to node " + v.getKey());
+            // Accelerate for next in case it has stopped
+            while(this.speed <= 0) this.speed = accelerate(this.speed);
+
+            System.out.println(this.label + ": Moving to node " + v.getKey() + " for " + travel());
 
             // Moving from node to node
             this.vehicleSleep(travel());

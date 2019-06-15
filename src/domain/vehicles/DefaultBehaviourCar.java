@@ -34,12 +34,14 @@ public class DefaultBehaviourCar extends Vehicle {
     @Override
     protected long waitOnQueue() {
 
+        System.out.println(this.label + ": Waiting on entry queue.");
         return 1000;
     }
 
     @Override
     protected long waitToTravel() {
 
+        System.out.println(this.label + ": Waiting on entry queue.");
         return 1000;
     }
 }

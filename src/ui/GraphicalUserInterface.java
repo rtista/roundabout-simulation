@@ -1,12 +1,7 @@
 package ui;
 
-import domain.roundabout.Factory;
-import domain.roundabout.Roundabout;
-import domain.vehicles.DefaultBehaviourCar;
-
 import javax.swing.*;
 import java.awt.*;
-import java.security.InvalidParameterException;
 import java.util.*;
 
 /**
@@ -14,7 +9,7 @@ import java.util.*;
  * what positions of the roundabout are being taken and
  * general vehicle flow.
  */
-public class GraphicalUserInterface extends JPanel {
+public class GraphicalUserInterface extends JPanel implements Runnable {
 
     /**
      * A map of the vertex keys against the respective value.
@@ -100,76 +95,25 @@ public class GraphicalUserInterface extends JPanel {
         }
     }
 
-    public static void main(String[] args) {
+    /**
+     * Updates UI roundabout representation with current values.
+     * Executed in a separated thread.
+     */
+    @Override
+    public void run() {
 
-        // Create Roundabout Graph
-        double radius = 15;
-        int nLanes = 2;
-        int nExits = 4;
-        int nEntries = 4;
+        // Update UI
+        while (true) {
 
-        Roundabout roundabout = null;
+            // Repaint GUI
+            this.repaint();
 
-        // Build roundabout
-        try {
-            roundabout = Factory.getInstance().buildRoundabout(
-                    radius, nLanes, nEntries, nExits);
-
-        } catch (InvalidParameterException e) {
-
-            System.out.println("Error: " + e.getMessage());
-            System.exit(1);
+            // Sleep for a fifth of a second
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-
-        // Create watcher thread
-        UIDataUpdater updater = new UIDataUpdater(roundabout);
-        updater.start();
-
-        // Create GUI elements
-        JFrame f = new JFrame();
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        GraphicalUserInterface gui = new GraphicalUserInterface(updater);
-        f.add(gui);
-
-        f.pack();
-        f.setVisible(true);
-
-        // Create Random generator
-        Random generator = new Random();
-
-        // Query watcher thread and call repaint
-        new Thread(
-                () -> {
-                    while (true) {
-
-                        // Repaint GUI
-                        gui.repaint();
-
-                        // Sleep for a fifth of a second
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-        ).start();
-
-        // Read from user input
-        do {
-
-            Scanner reader = new Scanner(System.in);  // Reading from System.in
-            System.out.println("Press enter to create a car");
-
-            reader.nextLine();
-
-            new DefaultBehaviourCar(
-                    new Color(generator.nextFloat(), generator.nextFloat(), generator.nextFloat()),
-                    1,
-                    4,
-                    roundabout).start();
-
-        } while (true);
     }
 }
