@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Vehicles are represented as threads and will
  * be placed in roundabout entries.
  */
-public class Vehicle extends Thread {
+public abstract class Vehicle extends Thread {
 
     /**
      * The vehicle label for identification purposes.
@@ -38,17 +38,22 @@ public class Vehicle extends Thread {
     /**
      * The vehicle's acceleration.
      */
-    private final double acceleration;
+    protected float acceleration;
 
     /**
-     * The vehicle's current speed in KM/h.
+     * The vehicle's current speed.
      */
-    private double speed;
+    private float speed;
+
+    /**
+     * The vehicle's maximum speed.
+     */
+    private float maxSpeed;
 
     /**
      * The roundabout data structure
      */
-    private Roundabout roundabout;
+    protected Roundabout roundabout;
 
     /**
      * Vehicle empty constructor.
@@ -68,9 +73,10 @@ public class Vehicle extends Thread {
      * @param source       The roundabout entry from which the vehicle is coming.
      * @param destination  The roundabout exit which the vehicle is taking.
      * @param acceleration The vehicle's acceleration.
+     * @param maxSpeed     The vehicle's maximum speed.
      * @param roundabout   The roundabout data structure.
      */
-    public Vehicle(Color color, int source, int destination, double acceleration, Roundabout roundabout) {
+    public Vehicle(Color color, int source, int destination, float acceleration, float maxSpeed, Roundabout roundabout) {
 
         this.label = null;
         this.color = color;
@@ -78,6 +84,7 @@ public class Vehicle extends Thread {
         this.destination = destination;
         this.speed = 0;
         this.acceleration = acceleration;
+        this.maxSpeed = maxSpeed;
         this.roundabout = roundabout;
     }
 
@@ -88,9 +95,10 @@ public class Vehicle extends Thread {
      * @param source       The roundabout entry from which the vehicle is coming.
      * @param destination  The roundabout exit which the vehicle is taking.
      * @param acceleration The vehicle's acceleration.
+     * @param maxSpeed     The vehicle's maximum speed.
      * @param roundabout   The roundabout data structure.
      */
-    public Vehicle(String label, Color color, int source, int destination, double acceleration, Roundabout roundabout) {
+    public Vehicle(String label, Color color, int source, int destination, float acceleration, float maxSpeed, Roundabout roundabout) {
 
         this.label = label;
         this.color = color;
@@ -98,6 +106,7 @@ public class Vehicle extends Thread {
         this.destination = destination;
         this.speed = 0;
         this.acceleration = acceleration;
+        this.maxSpeed = maxSpeed;
         this.roundabout = roundabout;
     }
 
@@ -124,8 +133,57 @@ public class Vehicle extends Thread {
     }
 
     /**
+     * Returns the vehicle route in the roundabout.
+     *
+     * @param entry The entry the vehicle is approaching.
+     * @param exit The exit the vehicle intends to take.
+     *
+     * @return Deque<Vertex<AtomicReference>> The vehicle route in the roundabout
+     */
+    protected abstract Deque<Vertex<AtomicReference>> getVehicleRoute(int entry, int exit);
+
+    /**
+     * Accelerates the vehicle.
+     *
+     * @param currentSpeed The current speed before accelerating.
+     *
+     * @return float The new current speed after accelerating.
+     */
+    protected abstract float accelerate(float currentSpeed);
+
+    /**
+     * Decelerates the vehicle.
+     *
+     * @param currentSpeed The current speed before decelerating.
+     *
+     * @return float The new current speed after deceleration.
+     */
+    protected abstract float decelerate(float currentSpeed);
+
+    /**
+     * Waits on the vehicle queue at the roundabout entrance.
+     *
+     * @return long The number of milliseconds to wait before attempting to enter the roundabout again.
+     */
+    protected abstract long waitOnQueue();
+
+    /**
+     * Travels between two points.
+     *
+     * @return long The number of milliseconds to to wait before attempting to move to the next point again.
+     */
+    protected abstract long waitToTravel();
+
+    /**
+     * Travels between two points.
+     *
+     * @return long The number of milliseconds to move from one point to another.
+     */
+    protected abstract long travel();
+
+    /**
      * This will run in a separate thread.
-     * <p>
+     *
      * The method replicates the driver behaviour.
      * 1. Waits in queue for its turn.
      * 2. Asks which path should it follow to the roundabout object.
@@ -143,68 +201,49 @@ public class Vehicle extends Thread {
         }
 
         // Ask roundabout object for path
-        Deque<Vertex<AtomicReference>> path = this.roundabout.getVehicleShortestRoute(this.source, this.destination);
+        Deque<Vertex<AtomicReference>> path = this.getVehicleRoute(this.source, this.destination);
         Vertex<AtomicReference> last = null;
 
         // Get entry queue
         ConcurrentLinkedQueue<Vehicle> entry = this.roundabout.queueOnEntry(this, this.source);
 
         // Wait for first in queue
-        while(entry.peek() != this) {
-
-            this.vehicleSleep(1000);
-            System.out.println(this.label + ": Waiting on entry queue.");
-        }
+        while(entry.peek() != this) this.vehicleSleep(waitOnQueue());
 
         // Traverse Path
         for (Vertex<AtomicReference> v : path) {
 
-            System.out.println(this.label + ": Moving to node " + v.getKey());
+            // Accelerate between path nodes
+            if (this.speed < this.maxSpeed) accelerate(this.speed);
 
             // Move to node
             while (!v.getValue().compareAndSet(null, this)) {
 
-                // Print behaviour
-                System.out.println(this.label + ": Waiting for lock on the " + v.getKey() + " node!");
+                // Decelerate to not crash into another vehicle
+                while(this.speed > 0) decelerate(this.speed);
 
-                // Sleep
-                this.vehicleSleep(1000);
+                System.out.println(this.label + ": Waiting for next node " + v.getKey());
+
+                // Wait
+                this.vehicleSleep(waitToTravel());
             }
+
+            System.out.println(this.label + ": Moving to node " + v.getKey());
+
+            // Moving from node to node
+            this.vehicleSleep(travel());
 
             // Remove myself from queue only after locking the first node
             if (path.peekFirst() == v) entry.remove(this);
 
-            // Moving from node to node
-            // TODO: Implements physic here to with vehicle speed
-            this.vehicleSleep(1000);
-
-            // Unlock previous locked node
-            if (last != null) {
-
-                // Release last node
-                while (!last.getValue().compareAndSet(this, null)) {
-
-                    // Print behaviour
-                    System.out.println(this.label + ": Releasing lock on the " + last.getKey() + " node!");
-
-                    // Sleep
-                    this.vehicleSleep(1000);
-                }
-            }
+            // Release last node
+            while(last != null && !last.getValue().compareAndSet(this, null));
 
             // Assign v as the last node which it travelled to
             last = v;
         }
 
         // Release last node
-        while (!last.getValue().compareAndSet(this, null)) {
-
-            // Print behaviour
-            System.out.println(this.label + ": Releasing lock on the " + last.getKey() + " node!");
-
-            // Sleep
-            this.vehicleSleep(1000);
-        }
-
+        while(!last.getValue().compareAndSet(this, null));
     }
 }

@@ -2,14 +2,12 @@ package ui;
 
 import domain.roundabout.Factory;
 import domain.roundabout.Roundabout;
-import domain.vehicles.Car;
-import graphv2.Vertex;
+import domain.vehicles.DefaultBehaviourCar;
 
 import javax.swing.*;
 import java.awt.*;
 import java.security.InvalidParameterException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Class provides a GUI which allows the user to see
@@ -166,8 +164,12 @@ public class GraphicalUserInterface extends JPanel {
 
             reader.nextLine();
 
-            new Car(new Color(generator.nextFloat(), generator.nextFloat(), generator.nextFloat()),
-                    1, 4, 5, roundabout).start();
+            new DefaultBehaviourCar(new Color(generator.nextFloat(), generator.nextFloat(), generator.nextFloat()),
+                    1,
+                    4,
+                    5,
+                    60,
+                    roundabout).start();
 
         } while (true);
     }

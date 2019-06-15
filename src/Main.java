@@ -22,7 +22,7 @@ public class Main {
 
         // Holds all the Vehicle children classes
         /*final String[] VEHICLE_CLASSES = {
-            "domain.vehicles.Car",
+            "domain.vehicles.DefaultBehaviourCar",
             "domain.vehicles.Motorcycle"
         };
 
@@ -63,7 +63,7 @@ public class Main {
 
         // Create Vehicle
         for (int i = 0; i < cars; i++) {
-            Car car = new Car(
+            DefaultBehaviourCar car = new DefaultBehaviourCar(
                     // generator.nextInt(4),
                     // generator.nextInt(4),
                     0,

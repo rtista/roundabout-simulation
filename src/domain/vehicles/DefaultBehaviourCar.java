@@ -1,20 +1,17 @@
 package domain.vehicles;
 
+import domain.roundabout.Roundabout;
 import graphv2.Vertex;
 
+import java.awt.*;
 import java.util.Deque;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Represents a motorcycle vehicle.
- */
-public class Motorcycle extends Vehicle {
+public class DefaultBehaviourCar extends Vehicle {
 
-    /**
-     * Motorcycle empty constructor.
-     */
-    public Motorcycle() {
 
+    public DefaultBehaviourCar(Color color, int source, int destination, float acceleration, float maxSpeed, Roundabout roundabout) {
+        super(color, source, destination, acceleration, maxSpeed, roundabout);
     }
 
     @Override
@@ -24,26 +21,31 @@ public class Motorcycle extends Vehicle {
 
     @Override
     protected float accelerate(float currentSpeed) {
-        return 0;
+
+        return currentSpeed + this.acceleration;
     }
 
     @Override
     protected float decelerate(float currentSpeed) {
-        return 0;
+
+        return currentSpeed - this.acceleration;
     }
 
     @Override
     protected long waitOnQueue() {
-        return 0;
+
+        return 1000;
     }
 
     @Override
     protected long waitToTravel() {
-        return 0;
+
+        return 1000;
     }
 
     @Override
     protected long travel() {
-        return 0;
+
+        return 1000;
     }
 }
