@@ -78,6 +78,11 @@ public class Factory {
             double perimeter = (2 * Math.PI * laneRadius);
             int nodes = (int) (perimeter * VERTEX_PER_METER_RATIO);
 
+            // Check if graph is possible
+            if (i == 0 && nodes < (nEntries + nExits)) {
+                throw new InvalidParameterException("Too many entries and exits for so little nodes!");
+            }
+
             /*
              * Create and add first node
              * The weight is equal to the roundabout lane (0 is the outer lane)
@@ -176,6 +181,11 @@ public class Factory {
                 // When end is reached the next outer node is the first node
                 if (nextOuterIndex == outer.size()) {
                     nextOuterIndex = 0;
+                }
+
+                // When end is reached the next outer node is the first node
+                if (innerIndex == inner.size()) {
+                    innerIndex = 0;
                 }
 
                 // Ignore every dif nth node
