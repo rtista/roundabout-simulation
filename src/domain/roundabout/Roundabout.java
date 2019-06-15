@@ -74,6 +74,24 @@ public class Roundabout {
     }
 
     /**
+     * Returns the number of entries in the roundabout.
+     *
+     * @return int The number of entries in the roundabout.
+     */
+    public int getEntriesNumber() {
+        return this.entryNodes.size();
+    }
+
+    /**
+     * Returns the number of exits in the roundabout.
+     *
+     * @return int The number of exits in the roundabout.
+     */
+    public int getExitsNumber() {
+        return this.exitNodes.size();
+    }
+
+    /**
      * Check if vertex is entry.
      *
      * @param vertex The vertex to check.

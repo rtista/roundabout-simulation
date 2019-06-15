@@ -9,7 +9,7 @@ import java.util.*;
  * what positions of the roundabout are being taken and
  * general vehicle flow.
  */
-public class GraphicalUserInterface extends JPanel implements Runnable {
+public class RoundaboutVisualizer extends JPanel {
 
     /**
      * A map of the vertex keys against the respective value.
@@ -38,7 +38,7 @@ public class GraphicalUserInterface extends JPanel implements Runnable {
      *
      * @param updater The roundabout graph vertices.
      */
-    public GraphicalUserInterface(UIDataUpdater updater, Map<Integer, Double> lanePerimeterMap) {
+    public RoundaboutVisualizer(UIDataUpdater updater, Map<Integer, Double> lanePerimeterMap) {
         super(true);
         int dim = (int) Math.round(lanePerimeterMap.get(0)) * 5;
         this.setPreferredSize(new Dimension(dim, dim));
@@ -98,28 +98,6 @@ public class GraphicalUserInterface extends JPanel implements Runnable {
 
                 // Increment counter
                 k++;
-            }
-        }
-    }
-
-    /**
-     * Updates UI roundabout representation with current values.
-     * Executed in a separated thread.
-     */
-    @Override
-    public void run() {
-
-        // Update UI
-        while (true) {
-
-            // Repaint GUI
-            this.repaint();
-
-            // Sleep for a fifth of a second
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
