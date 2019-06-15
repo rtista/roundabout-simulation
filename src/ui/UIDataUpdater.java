@@ -25,7 +25,7 @@ public class UIDataUpdater extends Thread {
      * A map of the vertex keys against whether
      * the vertex is occupied or not.
      */
-    private Map<Integer, Color> data;
+    private Map<Integer, TreeMap<Integer, Color>> data;
 
     /**
      * Whether the thread can or not keep running.
@@ -44,16 +44,31 @@ public class UIDataUpdater extends Thread {
 
         // Populate vertices and data maps
         this.roundabout.getVertices().forEach(vertex -> {
-            this.data.put(vertex.getKey(), Color.GREEN);
+
+            int weight = vertex.getWeight();
+
+            // Make entries and exits stay in outer lanes
+            if (vertex.getWeight() < 0) {
+                weight = 0;
+            }
+
+            // Create new weight hash map
+            if (!this.data.containsKey(weight)) {
+
+                this.data.put(vertex.getWeight(), new TreeMap<>());
+            }
+
+            // Place vertex
+            this.data.get(weight).put(vertex.getKey(), Color.GREEN);
         });
     }
 
     /**
      * Get vertex vacancy data.
      *
-     * @return Map<Integer, Color>
+     * @return Map<Integer, TreeMap<Integer, Color>>
      */
-    public Map<Integer, Color> getData() {
+    public Map<Integer, TreeMap<Integer, Color>> getData() {
 
         return this.data;
     }
@@ -74,10 +89,17 @@ public class UIDataUpdater extends Thread {
     public void run() {
 
         // Just so we're able to tell the thread to gracefully stop.
-        while(this.canrun) {
+        while (this.canrun) {
 
             // Iterate all vertices and recreate data map
             for (Vertex<AtomicReference> v : this.roundabout.getVertices()) {
+
+                int weight = v.getWeight();
+
+                // Make entries and exits stay in outer lanes
+                if (v.getWeight() < 0) {
+                    weight = 0;
+                }
 
                 // Default color is GREEN (node is free)
                 Color color = Color.GREEN;
@@ -89,19 +111,19 @@ public class UIDataUpdater extends Thread {
 
                     color = Color.BLUE;
 
-                // Is exit then orange
+                    // Is exit then orange
                 } else if (this.roundabout.isExit(v)) {
 
                     color = Color.ORANGE;
 
-                // If instance of vehicle then get vehicle color
+                    // If instance of vehicle then get vehicle color
                 } else if (ref instanceof Vehicle) {
 
                     color = ((Vehicle) ref).getColor();
                 }
 
                 // Override vehicle data
-                this.data.replace(v.getKey(), color);
+                this.data.get(weight).replace(v.getKey(), color);
             }
         }
     }

@@ -3,13 +3,13 @@ package ui;
 import domain.roundabout.Factory;
 import domain.roundabout.Roundabout;
 import domain.vehicles.Car;
+import graphv2.Vertex;
 
 import javax.swing.*;
 import java.awt.*;
 import java.security.InvalidParameterException;
-import java.util.Map;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Class provides a GUI which allows the user to see
@@ -58,36 +58,47 @@ public class GraphicalUserInterface extends JPanel {
         g2d.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setColor(Color.black);
 
-        // Calculations
-        a = getWidth() / 2;
-        b = getHeight() / 2;
-        int m = Math.min(a, b);
-        r = 4 * m / 5;
-        int r2 = Math.abs(m - r) / 2;
+        // Get data map from updater class
+        Map<Integer, TreeMap<Integer, Color>> dataMap = this.updater.getData();
 
-        // Draw circumference (roundabout lane)
-        g2d.drawOval(a - r, b - r, 2 * r, 2 * r);
+        // For each of the lanes
+        for (Integer i : dataMap.keySet()) {
 
-        int i = 0;
+            // Calculations
+            a = getWidth() / 2;
+            b = getHeight() / 2;
 
-        Map<Integer, Color> data = this.updater.getData();
+            // Radius of circumference
+            r = (SIZE / 2) / (i + 1);
 
-        // Draw nodes
-        for (int key : data.keySet()) {
+            // Radius of nodes
+            int r2 = 10;
 
-            // Get color from map
-            g2d.setColor(data.get(key));
+            // Draw circumference (roundabout lane)
+            g2d.setColor(Color.black);
+            g2d.drawOval(a - r, b - r, 2 * r, 2 * r);
 
-            // Calculate circle position
-            double t = 2 * Math.PI * i / data.size();
-            int x = (int) Math.round(a + r * Math.cos(t));
-            int y = (int) Math.round(b + r * Math.sin(t));
-            g2d.fillOval(x - r2, y - r2, 2 * r2, 2 * r2);
+            int k = 0;
 
-            // Increment counter
-            i++;
+            // Get vertices for this roundabout lane
+            TreeMap<Integer, Color> data = dataMap.get(i);
+
+            // Draw nodes
+            for (Integer key : data.keySet()) {
+
+                // Get color from map
+                g2d.setColor(data.get(key));
+
+                // Calculate circle position
+                double t = 2 * Math.PI * k / data.size();
+                int x = (int) Math.round(a + r * Math.cos(t));
+                int y = (int) Math.round(b + r * Math.sin(t));
+                g2d.fillOval(x - r2, y - r2, 2 * r2, 2 * r2);
+
+                // Increment counter
+                k++;
+            }
         }
     }
 
@@ -131,20 +142,20 @@ public class GraphicalUserInterface extends JPanel {
 
         // Query watcher thread and call repaint
         new Thread(
-          () -> {
-              while (true) {
+                () -> {
+                    while (true) {
 
-                  // Repaint GUI
-                  gui.repaint();
+                        // Repaint GUI
+                        gui.repaint();
 
-                  // Sleep for a fifth of a second
-                  try {
-                      Thread.sleep(200);
-                  } catch (InterruptedException e) {
-                      e.printStackTrace();
-                  }
-              }
-          }
+                        // Sleep for a fifth of a second
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
         ).start();
 
         // Read from user input
@@ -158,6 +169,6 @@ public class GraphicalUserInterface extends JPanel {
             new Car(new Color(generator.nextFloat(), generator.nextFloat(), generator.nextFloat()),
                     1, 4, 5, roundabout).start();
 
-        } while(true);
+        } while (true);
     }
 }
