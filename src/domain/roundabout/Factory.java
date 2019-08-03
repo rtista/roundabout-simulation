@@ -24,7 +24,7 @@ public class Factory {
     public static final double VERTEX_PER_METER_RATIO = 0.25;
 
     /**
-     *
+     * The factory object (Singleton pattern)
      */
     private static final Factory instance = new Factory();
 
@@ -69,6 +69,9 @@ public class Factory {
         // For each of the lanes to be created
         for (int i = 0; i < nLanes; i++) {
 
+            // Whether to create an entry or an exit (so they'll be interleaved)
+            boolean createEntry = true;
+
             // Counters for created entries and exits
             int entriesCreated = 0;
             int exitsCreated = 0;
@@ -110,46 +113,42 @@ public class Factory {
                 curr = destination;
 
                 // Outer Lane - Create entries and exits
-                if (i == 0) {
+                if (i == 0 && j % (nodes / (nEntries + nExits)) == 0) {
 
-                    // Place entry or exit
-                    if (j % (nodes / (nEntries + nExits)) == 0) {
+                    // Create entry turn
+                    if (createEntry) {
 
                         // Create entry
                         if (entriesCreated < nEntries) {
 
-                            // Add entry vertex - Weight for entry nodes is -1
-                            Vertex<AtomicReference> entryVertex = graph.addVertex(
-                                    new Vertex<>(
-                                            0,
-                                            new AtomicReference(new ConcurrentLinkedQueue<Vehicle>()),
-                                            -1
-                                    )
-                            );
-
-                            // Create edge from entry node to roundabout node
-                            graph.addEdge(entryVertex.getKey(), curr.getKey());
-
-                            // Place the node mapped to the entry
-                            entryNodes.put(entriesCreated + 1, entryVertex);
-
+                            this.createEntryNode(graph, entryNodes, curr);
+                            createEntry = false;
                             entriesCreated++;
 
-                            // Create exit
+                        // Create exit
                         } else if (exitsCreated < nExits) {
 
-                            // Add exit vertex - Weight for exit nodes is -2
-                            Vertex<AtomicReference> exitVertex = graph.addVertex(
-                                    new Vertex<>(0, new AtomicReference<>(null), -2)
-                            );
-
-                            // Create edge from roundabout node to exit node
-                            graph.addEdge(curr.getKey(), exitVertex.getKey());
-
-                            // Place the node mapped to the exit
-                            exitNodes.put(exitsCreated + 1, exitVertex);
-
+                            this.createExitNode(graph, exitNodes, curr);
+                            createEntry = true;
                             exitsCreated++;
+                        }
+
+                    // Create exit turn
+                    } else {
+
+                        // Create exit
+                        if (exitsCreated < nExits) {
+
+                            this.createExitNode(graph, exitNodes, curr);
+                            createEntry = true;
+                            exitsCreated++;
+
+                        // Create entry
+                        } else if (entriesCreated < nEntries) {
+
+                                this.createEntryNode(graph, entryNodes, curr);
+                                createEntry = false;
+                                entriesCreated++;
                         }
                     }
                 }
@@ -212,5 +211,49 @@ public class Factory {
         }
 
         return new Roundabout(graph, entryNodes, exitNodes, lanePerimeterMap);
+    }
+
+    /**
+     * Creates an entry node on the current vertex for the given graph and appends this vertex to the entries map.
+     *
+     * @param graph      The graph in which to create the node.
+     * @param entryNodes The entry nodes map.
+     * @param current    The current vertex.
+     */
+    private void createEntryNode(Graph<AtomicReference> graph, Map<Integer, Vertex<AtomicReference>> entryNodes,
+                                 Vertex<AtomicReference> current) {
+
+        // Add entry vertex - Weight for entry nodes is -1
+        Vertex<AtomicReference> entryVertex = graph.addVertex(
+            new Vertex<>(0, new AtomicReference(new ConcurrentLinkedQueue<Vehicle>()), -1)
+        );
+
+        // Create edge from entry node to roundabout node
+        graph.addEdge(entryVertex.getKey(), current.getKey());
+
+        // Place the node mapped to the entry
+        entryNodes.put(entryNodes.size() + 1, entryVertex);
+    }
+
+    /**
+     * Creates an exit node on the current vertex for the given graph and appends this vertex to the exits map.
+     *
+     * @param graph     The graph in which to create the node.
+     * @param exitNodes The exit nodes map.
+     * @param current   The current vertex.
+     */
+    private void createExitNode(Graph<AtomicReference> graph, Map<Integer, Vertex<AtomicReference>> exitNodes,
+                                Vertex<AtomicReference> current) {
+
+        // Add exit vertex - Weight for exit nodes is -2
+        Vertex<AtomicReference> exitVertex = graph.addVertex(
+            new Vertex<>(0, new AtomicReference<>(null), -2)
+        );
+
+        // Create edge from roundabout node to exit node
+        graph.addEdge(current.getKey(), exitVertex.getKey());
+
+        // Place the node mapped to the exit
+        exitNodes.put(exitNodes.size() + 1, exitVertex);
     }
 }
