@@ -2,6 +2,7 @@ import domain.roundabout.Factory;
 import domain.roundabout.Roundabout;
 import ui.GUI;
 
+import javax.swing.*;
 import java.security.InvalidParameterException;
 
 /**
@@ -36,7 +37,7 @@ public class Main {
         }
 
         // Create GUI and start it
-        GUI gui = new GUI(roundabout);
+        GUI gui = new GUI(roundabout, "Nimbus");
         new Thread(gui).start();
     }
 }

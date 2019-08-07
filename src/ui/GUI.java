@@ -26,10 +26,26 @@ public class GUI extends JFrame implements Runnable {
      * Creates the graphic user interface JFrame.
      *
      * @param roundabout The roundabout object.
+     * @param lookandfeel LookAndFeel class name for the Graphical User Interface.
      */
-    public GUI(Roundabout roundabout) {
+    public GUI(Roundabout roundabout, String lookandfeel) {
 
         super();
+
+        // Safely set look and feel
+        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+
+            //  If theme is available
+            if (info.getName().equals(lookandfeel)) {
+
+                try {
+                    UIManager.setLookAndFeel(info.getClassName());
+
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+                    System.out.println("Could not set Nimbus look and feel safely.");
+                }
+            }
+        }
 
         // Set layout and default close operation
         setLayout(new BorderLayout());
