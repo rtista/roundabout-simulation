@@ -14,14 +14,19 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Factory {
 
     /**
+     * Keep roundabout object.
+     */
+    private Roundabout roundabout;
+
+    /**
      * Roundabout traffic lane width in meters.
      */
-    public static final double LANE_WIDTH = 3;
+    public static double LANE_WIDTH = 3;
 
     /**
      * Number of nodes per meter of perimeter of the roundabout lane.
      */
-    public static final double VERTEX_PER_METER_RATIO = 0.25;
+    public static double VERTEX_PER_METER_RATIO = 0.25;
 
     /**
      * The factory object (Singleton pattern)
@@ -42,6 +47,44 @@ public class Factory {
     public static Factory getInstance() {
 
         return instance;
+    }
+
+    /**
+     * Returns the last built roundabout.
+     *
+     * @return Roundabout
+     */
+    public Roundabout getRoundabout() {
+
+        return this.roundabout;
+    }
+
+    /**
+     * Set the current roundabout.
+     */
+    public void setRoundabout(Roundabout roundabout) {
+
+        this.roundabout = roundabout;
+    }
+
+    /**
+     * Set global lane width value.
+     *
+     * @param laneWidth The new value.
+     */
+    public void setLaneWidth(double laneWidth) {
+
+        Factory.LANE_WIDTH = laneWidth;
+    }
+
+    /**
+     * Set global vertex per meter value.
+     *
+     * @param vertexPerMeterRatio The new value.
+     */
+    public void setVertexPerMeterRatio(double vertexPerMeterRatio) {
+
+        Factory.VERTEX_PER_METER_RATIO = vertexPerMeterRatio;
     }
 
     /**

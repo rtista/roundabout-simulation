@@ -12,6 +12,7 @@ import java.util.Deque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Roundabout class.
@@ -65,6 +66,21 @@ public class Roundabout {
     public Collection<Vertex<AtomicReference>> getVertices() {
 
         return this.graph.getVertices();
+    }
+
+    /**
+     * Returns the vertices from lane 'i' in the graph.
+     *
+     * @return Collection<Vertex<AtomicReference>>
+     */
+    public Collection<Vertex<AtomicReference>> getVertices(int i) {
+
+        // If outer lane then add entries and exits
+        if (i == 0) {
+            return this.graph.getVertices().stream().filter(v -> v.getWeight() <= i).collect(Collectors.toList());
+        }
+
+        return this.graph.getVertices().stream().filter(v -> v.getWeight() == i).collect(Collectors.toList());
     }
 
     /**
