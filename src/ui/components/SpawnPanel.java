@@ -1,6 +1,6 @@
-package ui;
+package ui.components;
 
-import domain.roundabout.Roundabout;
+import domain.roundabout.Factory;
 import domain.vehicles.AggressiveBehaviourLight;
 import domain.vehicles.DefaultBehaviourHeavy;
 import domain.vehicles.DefaultBehaviourLight;
@@ -31,19 +31,13 @@ public class SpawnPanel extends JPanel {
      * The spawn button.
      */
     private JButton spawnButton;
-    /**
-     * The roundabout object.
-     */
-    private Roundabout roundabout;
 
     /**
-     *
+     * Spawn panel constructor.
      */
-    public SpawnPanel(Roundabout roundabout) {
+    public SpawnPanel() {
 
         super(true);
-
-        this.roundabout = roundabout;
 
         // Vehicle Types Combo Box
         this.vehicleTypes = new JComboBox<>();
@@ -53,12 +47,10 @@ public class SpawnPanel extends JPanel {
         this.vehicleTypes.setSelectedIndex(0);
 
         // Entries spinner
-        this.entrySpinner = new JSpinner(
-                new SpinnerNumberModel(1, 1, roundabout.getEntriesNumber(), 1));
+        this.entrySpinner = new JSpinner(new SpinnerNumberModel(1, 1, Factory.getInstance().getRoundabout().getEntriesNumber(), 1));
 
         // Exits spinner
-        this.exitSpinner = new JSpinner(
-                new SpinnerNumberModel(1, 1, roundabout.getExitsNumber(), 1));
+        this.exitSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Factory.getInstance().getRoundabout().getExitsNumber(), 1));
 
         // Vehicle Spawn Button
         this.spawnButton = new JButton("Spawn Vehicle");
@@ -81,7 +73,7 @@ public class SpawnPanel extends JPanel {
 
                 new DefaultBehaviourHeavy(
                         new Color(this.generator.nextFloat(), this.generator.nextFloat(), this.generator.nextFloat()),
-                        entryNumber, exitNumber, this.roundabout).start();
+                        entryNumber, exitNumber, Factory.getInstance().getRoundabout()).start();
 
                 // Light vehicle with default behaviour
             } else if (vehicleType.equals("light:default")) {
@@ -90,7 +82,7 @@ public class SpawnPanel extends JPanel {
 
                 new DefaultBehaviourLight(
                         new Color(this.generator.nextFloat(), this.generator.nextFloat(), this.generator.nextFloat()),
-                        entryNumber, exitNumber, this.roundabout).start();
+                        entryNumber, exitNumber, Factory.getInstance().getRoundabout()).start();
 
                 // Light vehicle with aggressive behaviour
             } else if (vehicleType.equals("light:aggressive")) {
@@ -99,7 +91,7 @@ public class SpawnPanel extends JPanel {
 
                 new AggressiveBehaviourLight(
                         new Color(this.generator.nextFloat(), this.generator.nextFloat(), this.generator.nextFloat()),
-                        entryNumber, exitNumber, this.roundabout).start();
+                        entryNumber, exitNumber, Factory.getInstance().getRoundabout()).start();
             }
         });
 
@@ -107,9 +99,10 @@ public class SpawnPanel extends JPanel {
         setLayout(new FlowLayout());
 
         // Add all components
+        add(new JLabel("Vehicle/Driver:"));
         add(this.vehicleTypes);
-        add(this.entrySpinner);
-        add(this.exitSpinner);
+        add(new LabeledJSpinner(new JLabel("Entry:"), this.entrySpinner));
+        add(new LabeledJSpinner(new JLabel("Exit:"), this.exitSpinner));
         add(this.spawnButton);
 
         // Set visible

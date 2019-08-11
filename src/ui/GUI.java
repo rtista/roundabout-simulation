@@ -1,6 +1,10 @@
 package ui;
 
+import domain.roundabout.Factory;
 import domain.roundabout.Roundabout;
+import ui.components.BuildPanel;
+import ui.components.RoundaboutVisualizer;
+import ui.components.SpawnPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,22 +17,11 @@ public class GUI extends JFrame implements Runnable {
     private RoundaboutVisualizer roundaboutVisualizer;
 
     /**
-     * The vehicle spawn configuration panel.
-     */
-    private SpawnPanel spawnPanel;
-
-    /**
-     * The UI Data Updater.
-     */
-    private UIDataUpdater updater;
-
-    /**
      * Creates the graphic user interface JFrame.
      *
-     * @param roundabout The roundabout object.
      * @param lookandfeel LookAndFeel class name for the Graphical User Interface.
      */
-    public GUI(Roundabout roundabout, String lookandfeel) {
+    public GUI(String lookandfeel) {
 
         super();
 
@@ -51,16 +44,19 @@ public class GUI extends JFrame implements Runnable {
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Spawn UI Data Updater
-        this.updater = new UIDataUpdater(roundabout);
+        // The roundabout configuration object
+        BuildPanel buildPanel = new BuildPanel();
+
+        // The vehicle spawn configuration panel
+        SpawnPanel spawnPanel = new SpawnPanel();
 
         // Create JPanel instances
-        this.roundaboutVisualizer = new RoundaboutVisualizer(updater, roundabout.getLanePerimeterMap());
-        this.spawnPanel = new SpawnPanel(roundabout);
+        this.roundaboutVisualizer = new RoundaboutVisualizer();
 
         // Add panels to layout
         add(this.roundaboutVisualizer, BorderLayout.NORTH);
-        add(this.spawnPanel, BorderLayout.SOUTH);
+        add(buildPanel, BorderLayout.CENTER);
+        add(spawnPanel, BorderLayout.SOUTH);
 
         pack();
         setVisible(true);
@@ -72,9 +68,6 @@ public class GUI extends JFrame implements Runnable {
      */
     @Override
     public void run() {
-
-        // Start UI Data Updater
-        this.updater.start();
 
         // Update Roundabout Visualizer
         while (true) {
